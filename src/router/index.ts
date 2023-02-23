@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 
@@ -16,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
+  {
+    path: "/auth",
+    name: "auth",
+    component: () => import("../views/Register.vue")
+  }
 ];
 
 const router = createRouter({
