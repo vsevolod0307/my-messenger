@@ -1,15 +1,15 @@
 <template>
-  <registration/>
+  <user-profile/>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import Registration from "@/components/Registration.vue";
+import UserProfile from "@/components/UserProfile.vue";
 
 @Options({
   components: {
-    Registration
+    UserProfile
   },
 })
-export default class Register extends Vue {}
+export default class Profile extends Vue {}
 </script>

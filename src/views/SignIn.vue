@@ -1,15 +1,15 @@
 <template>
-  <registration/>
+  <auth/>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import Registration from "@/components/Registration.vue";
+import Auth from "@/components/Auth.vue";
 
 @Options({
   components: {
-    Registration
+    Auth
   },
 })
-export default class Register extends Vue {}
+export default class SignIn extends Vue {}
 </script>
