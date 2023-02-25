@@ -1,24 +1,44 @@
 <template>
-    <html>user profile id:{{ id }}</html>
-    <div class="sign-out">
-        <button @click="signOutUser">Выйти</button>
+    <div class="profile">
+        <div class="user-avatar">
+            <input type="file" @change="editImage">
+        </div>
+        <div class="sign-out">
+            <button @click="signOutUser">Выйти</button>
+        </div>
     </div>
 </template>
 
-<script lang="ts">
+<script>
 import { signOut, getAuth } from 'firebase/auth';
+import { getDatabase, set, ref } from "firebase/database";
 
 export default {
     data() {
         return {
             auth: getAuth(),
-            id: this.$route.params.id
+            id: this.$route.params.id,
+            imageUrl: ""
         }
     },
     methods: {
         signOutUser() {
             signOut(this.auth);
+        },
+        editImage(e) {
+            console.log(e.target.value);
+        },
+        writeUserData(userId, name, email, imageUrl) {
+            const db = getDatabase();
+            set(ref(db, 'users/' + userId), {
+                username: name,
+                email: email,
+                profile_picture: imageUrl
+            });
         }
+    },
+    mounted() {
+        // this.writeUserData("88", "test", "kkk@mail.ru", "image.png");
     }
 }
 </script>

@@ -6,7 +6,7 @@
   <router-view />
 </template>
 
-<script lang="ts">
+<script>
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut } from 'firebase/auth';
 
 export default {
@@ -28,7 +28,7 @@ export default {
       })
     }
   },
-  mounted(): void {
+  mounted() {
     this.checkAuthUser();
   }
 }
