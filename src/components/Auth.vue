@@ -1,14 +1,11 @@
 <template>
 <div class="auth">
     <form class="auth-sign">
-        <input type="mail" placeholder="Введите Email" v-model="email">
+        <input type="email" placeholder="Введите Email" v-model="email">
         <input type="password" placeholder="Введите пароль" v-model="password">
         <button @click.prevent="signUser" type="submit">Войти</button>
         <router-link to="/registration">Регистрация</router-link>
     </form>
-    <div class="sign-out">
-        <button @click="signOutUser">Выйти</button>
-    </div>
 </div>
 </template>
 
@@ -42,22 +39,7 @@ export default {
                 console.log(error.message);
             })
         },
-        checkAuthUser() {
-            onAuthStateChanged(this.auth, (user) => {
-                if(user) {
-                    this.isAuthUser = true;
-                    console.log(user)
-                } else {
-                    console.log(user)
-                } 
-            })
-        },
-        signOutUser() {
-            signOut(this.auth);
-        }
-    },
-    mounted() {
-        this.checkAuthUser();
+        
     }
 }
 </script>
@@ -80,7 +62,7 @@ export default {
         font-size: 16px;
     }
 
-    .auth-sign button, .sign-out button {
+    .auth-sign button {
         background-color: #a1eba1;
         border: none;
         border-radius: 6px;
@@ -90,20 +72,7 @@ export default {
         cursor: pointer;
         width: 100%;
     }
-    .sign-out {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-    }
-    .sign-out button {
-        background-color: rgb(245 64 68);
-        font-size: 14px;
-    }
     .auth-sign button:hover {
         background-color: rgba(161,  235,  161, 0.5);
-    }  
-    .sign-out button:hover {
-        background-color: rgba(245, 64, 68, 0.7);
-    }  
-
+    }
 </style>

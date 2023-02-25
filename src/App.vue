@@ -1,11 +1,38 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/auth">Auth</router-link>
+    <router-link to="/about">About</router-link>
   </nav>
   <router-view />
 </template>
+
+<script lang="ts">
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut } from 'firebase/auth';
+
+export default {
+  data() {
+    return {
+      auth: getAuth()
+    }
+  },
+  methods: {
+    checkAuthUser() {
+      onAuthStateChanged(this.auth, (user) => {
+        if(user) {
+          console.log(user);
+          this.$router.push({name: "profile", params: { id: user.uid }});
+        } else {
+          console.log(user)
+          this.$router.push("/auth")
+        } 
+      })
+    }
+  },
+  mounted(): void {
+    this.checkAuthUser();
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
