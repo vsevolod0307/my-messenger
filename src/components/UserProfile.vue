@@ -41,7 +41,7 @@
 
 <script>
 import { signOut, getAuth } from 'firebase/auth';
-import { getDatabase, set, ref, onValue, get, child } from "firebase/database";
+import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
 import { getStorage, ref as refStor, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default {
@@ -80,35 +80,26 @@ export default {
                 gender: this.gender,
                 about_us: this.about_us
             })
-            .then(s => console.log(s))
-            .catch((error) => {
-                console.log(error)
-            });
             this.isEdit = false;
         },
-        // getDataProfile() {
-        //     const dbRef = ref(getDatabase());
-        //     get(child(dbRef, this.userUid))
-        //     .then((snapshot) => {
-        //         if (snapshot.exists()) {
-        //             console.log(snapshot.val());
-        //         } else {
-        //             console.log("No data available");
-        //         }
-        //         }).catch((error) => {
-        //         console.error(error);
-        //         });
-        //     // const db = getDatabase();
-        //     // const profileInfo = ref(db, this.userUid);
-        //     // onValue(profileInfo, (snapshot) => {
-        //     //     const data = snapshot.val();
-        //     //     console.log(data);
-        //     //     console.log(snapshot.exists());
-        //     // })
-        // }
+        getDataProfile() {
+            const storage = getDatabase();
+            const sRef = ref(storage, `users/(TUvBqw8YMeOp9dRsTlG5oZBvA8L2)`)
+            console.log(sRef.key)
+            onValue(sRef, data => {
+                console.log(data.val())
+            })
+            // const db = getDatabase();
+            // const profileInfo = ref(db, this.userUid);
+            // onValue(profileInfo, (snapshot) => {
+            //     const data = snapshot.val();
+            //     console.log(data);
+            //     console.log(snapshot.exists());
+            // })
+        }
     },
-    mounted() {
-        // this.getDataProfile();
+    created() {
+        this.getDataProfile();
         // this.writeUserData("88", "test", "kkk@mail.ru", "image.png");
     }
 }
