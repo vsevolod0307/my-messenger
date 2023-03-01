@@ -122,7 +122,7 @@ export default {
         getToken(messaging, { vapidKey: "BP9SY499ZYNuBIwzAEAiUDuZ2CSEigCIj6qfzkfIuoKAMpEcISRAWaQT7XL8nAt8ogDj2dpIJapauo8G1by0VOk" }).then((currentToken) => {
             if (currentToken) {
                 // Send the token to your server and update the UI if necessary
-                console.log(currentToken);
+                // console.log(currentToken);
                 // ...
             } else {
                 // Show permission request UI
