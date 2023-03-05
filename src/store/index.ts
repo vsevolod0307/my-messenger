@@ -6,22 +6,29 @@ export default createStore({
   state: {
     userAuth: null,
     listUsers: null,
-    databaseRef: null
+    databaseRef: null,
+    userUid: null
   },
   getters: {
     getListUsers(state) {
       return state.listUsers;
+    },
+    userUid: state => {
+      return state.userUid
     }
   },
   mutations: {
     auth(state) {
-      state.userAuth = getAuth(); 
+      state.userAuth = getAuth();
     },
     databaseRef(state, pathDb) {
       state.databaseRef = ref(getDatabase(), pathDb);
     },
     updateListUsers(state, data) {
       state.listUsers = data;
+    },
+    saveUid(state, uid) {
+      state.userUid = uid;
     }
   },
   actions: {

@@ -1,7 +1,12 @@
 /* eslint-disable */
+import store from "@/store";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/",
+    redirect: { name: "allUsers" }
+  },
   {
     path: "/auth",
     name: "auth",

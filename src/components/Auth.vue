@@ -13,6 +13,9 @@
 /* eslint-disable */
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut } from 'firebase/auth';
 
+import store from '@/store';
+import { set, ref, getDatabase } from 'firebase/database';
+
 export default {
     name: "Auth",
     data() {
@@ -31,6 +34,9 @@ export default {
                 console.log(credentialUser);
                 this.email = "";
                 this.password = "";
+                set(ref(getDatabase(), `users/(${credentialUser.user.uid})`, {
+                    uid: credentialUser.user.uid
+                }))
                 this.$router.push({name: "profile", params: { id: credentialUser.user.uid }})
             })
             .catch((error) => {
@@ -38,8 +44,7 @@ export default {
                 console.log(error.code);
                 console.log(error.message);
             })
-        },
-        
+        }
     }
 }
 </script>

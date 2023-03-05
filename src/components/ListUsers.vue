@@ -1,4 +1,10 @@
 <template>
+    <div class="my-profile">
+        <router-link 
+            :to="{ name: 'profile', params: { id: uid } }"
+        >
+        мой профиль</router-link>
+    </div>
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
             {{ cons(listUsers) }}
@@ -27,6 +33,7 @@
 <script>
 import store from '@/store';
 import { set, ref, getDatabase } from 'firebase/database';
+import { getAuth, Auth } from 'firebase/auth';
 export default {
     name: "ListUsers",
     data() {

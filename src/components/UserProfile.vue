@@ -44,6 +44,7 @@ export default {
             isEdit: false
         }
     },
+    props: ['id'],
     components: { ProfileEdit, ProfileMenu },
     methods: {
         signOutUser() {
@@ -72,7 +73,7 @@ export default {
         // }
     },
     created() {
-        store.dispatch("databaseRef", `users/(${this.$route.params.id})`)
+        store.dispatch("databaseRef", `users/(${this.id})`)
         console.log(store.state.databaseRef);
         this.updateDataProfile();
         
