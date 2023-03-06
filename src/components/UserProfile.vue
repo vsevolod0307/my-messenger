@@ -18,8 +18,9 @@
             </div>
         </div>
         <profile-edit
-            @update-data="getDataProfile"
+            :data="data"
             :isEdit="isEdit"
+            @edit="isEdit = $event"
         />
         <div class="profile-main-actions">
             <button class="edit" @click="isEdit = true">Редактировать</button>
@@ -40,12 +41,16 @@ import store from '@/store';
 export default {
     data() {
         return {
-            data: "",
+            data: "uuu",
             isEdit: false
         }
     },
-    props: ['id'],
     components: { ProfileEdit, ProfileMenu },
+    computed: {
+        uid() {
+            return store.state.userUid;
+        }
+    },
     methods: {
         signOutUser() {
             signOut(store.state.userAuth);
@@ -53,12 +58,9 @@ export default {
         getGender() {
             return this.data.gender === "male" ? "Мужчина" : "Женщина";
         },
-        getDataProfile(newData) {
-            this.data = newData;
-            this.isEdit = false;
-        },
         updateDataProfile() {
             onValue(store.state.databaseRef, data => {
+                console.log(data.val())
                 if(data.exists()) {
                     this.data = data.val();
                 } else {
@@ -72,9 +74,8 @@ export default {
         //     })
         // }
     },
-    created() {
-        store.dispatch("databaseRef", `users/(${this.id})`)
-        console.log(store.state.databaseRef);
+    mounted() {
+        store.dispatch("databaseRef", `users/(${this.$route.params.id})`)
         this.updateDataProfile();
         
         // console.log(getMessaging());

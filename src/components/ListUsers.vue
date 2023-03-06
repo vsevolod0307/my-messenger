@@ -1,6 +1,7 @@
 <template>
     <div class="my-profile">
-        <router-link 
+        <router-link
+            v-if="uid" 
             :to="{ name: 'profile', params: { id: uid } }"
         >
         мой профиль</router-link>
@@ -19,15 +20,16 @@
                 <span>Возраст: </span>
                 <span>{{ user.age }}</span>
             </div>
-            <button @click="isSend = true">Написать сообщение</button>
-            <div v-if="isSend" class="send-modal">
-                <form action="#">
-                    <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
-                    <button @click.prevent="sendMessage(user)" type="submit">Отправить</button>
-                </form>
-            </div>
+            <button class="list-user_send" @click="isSend = true">Написать сообщение</button>
         </li>
     </ul>
+
+    <div v-if="isSend" class="send-modal">
+        <form action="#">
+            <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
+            <button @click.prevent="sendMessage(user)" type="submit">Отправить</button>
+        </form>
+    </div>
 </template>
 
 <script>
@@ -45,6 +47,9 @@ export default {
     computed: {
         listUsers() {
             return store.getters.getListUsers;
+        },
+        uid() {
+            return store.state.userUid;
         }
     },
     methods: {
@@ -64,6 +69,7 @@ export default {
         }
     },
     mounted() {
+        // this.uid = store.state.userUid;
         store.dispatch("databaseRef", "users");
         store.dispatch("loadListUsers");
     }
@@ -87,6 +93,19 @@ export default {
         }
         &_name, &_age {
             padding: 10px 20px;
+        }
+        &_send {
+            background-color: #a1eba1;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 18px;
+            height: 40px;
+            text-transform: uppercase;
+            cursor: pointer;
+            &:hover {
+                background-color: rgba(161,  235,  161, 0.5);
+            }
         }
     }
 </style>

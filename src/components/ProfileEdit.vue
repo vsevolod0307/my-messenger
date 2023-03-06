@@ -2,26 +2,26 @@
     <div class="profile-edit" v-if="isEdit">
         <div class="user-avatar">
             <div class="avatar">
-                <img :src="dataProfile.avatarUrl" alt="">
+                <img :src="dataEdit.avatarUrl" alt="">
             </div>
             <input type="file" @change="editImage">
         </div>
         <div class="info-prof">
-            <input type="text" v-model="dataProfile.first_name" placeholder="Введите Имя" required>
-            <input type="text" v-model="dataProfile.last_name" placeholder="Введите Фамилию" required>
-            <input type="number" v-model="dataProfile.age" placeholder="Ваш возраст" required>
+            <input type="text" v-model="dataEdit.first_name" placeholder="Введите Имя" required>
+            <input type="text" v-model="dataEdit.last_name" placeholder="Введите Фамилию" required>
+            <input type="number" v-model="dataEdit.age" placeholder="Ваш возраст" required>
         </div>
         <div class="gender">
             <div class="male">
-                <input type="radio" name="gender" v-model="dataProfile.gender" value="male">
+                <input type="radio" name="gender" v-model="dataEdit.gender" value="male">
                 <label for="gender">Мужской</label>
             </div>
             <div class="female">
-                <input type="radio" name="gender" v-model="dataProfile.gender" value="female">
+                <input type="radio" name="gender" v-model="dataEdit.gender" value="female">
                 <label for="gender">Женский</label>
             </div>
         </div>
-        <textarea class="about_us" v-model="dataProfile.about_us" cols="30" rows="5" placeholder="Напишите о себе"></textarea>
+        <textarea class="about_us" v-model="dataEdit.about_us" cols="30" rows="5" placeholder="Напишите о себе"></textarea>
         <button @click="writeUserData" class="save-changes">Сохранить</button>
     </div>
 </template>
@@ -29,45 +29,45 @@
 <script>
 import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
 import { getStorage, ref as refStor, uploadBytes, getDownloadURL } from 'firebase/storage';
+import store from '@/store';
 
 export default {
     name: "ProfleEdit",
-    props: ['isEdit'],
+    props: ['isEdit', 'data'],
     data() {
         return {
             sRef: ref(getDatabase(), `users/(${this.$route.params.id})`),
-            dataProfile: {
-                avatarUrl: "",
-                first_name: "",
-                last_name: "",
-                age: "",
-                gender: "",
-                about_us: "",
-            }
+        }
+    },
+    computed: {
+        dataEdit() {
+            return this.data;
         }
     },
     methods: {
         writeUserData() {
             set(this.sRef, {
-                first_name: this.dataProfile.first_name,
-                last_name: this.dataProfile.last_name,
-                age: this.dataProfile.age,
-                gender: this.dataProfile.gender,
-                about_us: this.dataProfile.about_us,
-                avatarUrl: this.dataProfile.avatarUrl
+                first_name: this.dataEdit.first_name,
+                last_name: this.dataEdit.last_name,
+                age: this.dataEdit.age,
+                gender: this.dataEdit.gender,
+                about_us: this.dataEdit.about_us,
+                avatarUrl: this.dataEdit.avatarUrl
             })
-            .then(() => {
-                this.$emit("update-data", this.dataProfile);
-            })
+            this.$emit("edit", false)
         },
-        async editImage(imageUrl) {
+        editImage(imageUrl) {
             const storage = getStorage();
             const storRef = refStor(storage, `users/${this.$route.params.id}/avatar`);
             console.log("es")
-            await uploadBytes(storRef, imageUrl.target.files[0]);
-            await getDownloadURL(refStor(storage, `users/${this.$route.params.id}/avatar`))
-                .then((url) => this.dataProfile.avatarUrl = url);
+            uploadBytes(storRef, imageUrl.target.files[0]);
+            getDownloadURL(refStor(storage, `users/${this.$route.params.id}/avatar`))
+                .then((url) => this.dataEdit.avatarUrl = url);
         },
+    },
+    mounted() {
+        console.log(this.data)
+        console.log(this.dataEdit)
     }
 }
 </script>

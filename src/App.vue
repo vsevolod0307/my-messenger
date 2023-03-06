@@ -12,6 +12,7 @@ export default {
   methods: {
     checkAuthUser() {
       onAuthStateChanged(store.state.userAuth, (user) => {
+        store.commit("saveUid", user.uid);
         if(!user) {
           this.$router.push("/auth");
         }
