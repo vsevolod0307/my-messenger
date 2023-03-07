@@ -8,7 +8,6 @@
     </div>
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
-            {{ cons(listUsers) }}
             <div class="list-user_avatar">
                 <img :src="user.avatarUrl" alt="">
             </div>
@@ -20,10 +19,9 @@
                 <span>Возраст: </span>
                 <span>{{ user.age }}</span>
             </div>
-            <button class="list-user_send" @click="isSend = true">Написать сообщение</button>
+            <button class="list-user_send" @click="getUser(user)">Написать сообщение</button>
         </li>
     </ul>
-
     <div v-if="isSend" class="send-modal">
         <form action="#">
             <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
@@ -34,14 +32,15 @@
 
 <script>
 import store from '@/store';
-import { set, ref, getDatabase } from 'firebase/database';
+import { set, ref, getDatabase, push, onValue } from 'firebase/database';
 import { getAuth, Auth } from 'firebase/auth';
 export default {
     name: "ListUsers",
     data() {
         return {
             isSend: false,
-            message: ""
+            message: "",
+            user: ""
         }
     },
     computed: {
@@ -50,28 +49,54 @@ export default {
         },
         uid() {
             return store.state.userUid;
+        },
+        currentUser() {
+            return store.getters.getCurrentUser;
         }
     },
     methods: {
         sendMessage(user) {
             console.log(user);
-            console.log(this.listUsers);
-            // set(ref(getDatabase(), `users/(${this.$route.params.id})/messages/sent`), {
-            //     message: this.message,
-            //     from: `${user.first_name} ${user.last_name}` 
-            // }).then(() => {
-            //     const uidReceiver = this.listUsers
-            //     ref(getDatabase(), `users/(${this.$route.params.id})/messages/sent`)
-            // })
+            console.log(this.currentUser)
+            try {
+                onValue(ref(getDatabase(), `users/(${store.getters.userUid})/messages/sent`), data => {
+                    if(!data.exists()) {
+                        set(ref(getDatabase(), `users/(${store.getters.userUid})/messages/sent`), {
+                            to: `${user.first_name} ${user.last_name}`,
+                            toUid: user.uid 
+                        })
+                    }
+                })
+                onValue(ref(getDatabase(), `users/(${user.uid})/messages/incoming`), data => {
+                    if(!data.exists()) {
+                        set(ref(getDatabase(), `users/(${user.uid})/messages/incoming`), {
+                            from: `${this.currentUser.first_name} ${this.currentUser.last_name}`,
+                            fromUid: store.getters.userUid 
+                        })
+                    }
+                })
+                set(push(ref(getDatabase(), `users/(${store.getters.userUid})/messages/sent/personal-messages`)), {
+                    message: this.message
+                })
+                set(push(ref(getDatabase(), `users/(${user.uid})/messages/incoming/personal-messages`)), {
+                    message: this.message
+                })
+            } catch(e) {
+                console.log(e);
+            } finally {
+                this.isSend = false;
+                this.message = "";
+            }
         },
-        cons(i) {
-            console.log(i)
+        getUser(user) {
+            this.isSend = true
+            this.user = user;
         }
     },
     mounted() {
         // this.uid = store.state.userUid;
-        store.dispatch("databaseRef", "users");
-        store.dispatch("loadListUsers");
+        // store.dispatch("databaseRef", "users");
+        store.dispatch("loadGetUsers");
     }
 }
 </script>

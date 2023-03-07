@@ -34,9 +34,6 @@ export default {
                 console.log(credentialUser);
                 this.email = "";
                 this.password = "";
-                set(ref(getDatabase(), `users/(${credentialUser.user.uid})`, {
-                    uid: credentialUser.user.uid
-                }))
                 this.$router.push({name: "profile", params: { id: credentialUser.user.uid }})
             })
             .catch((error) => {

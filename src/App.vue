@@ -9,12 +9,21 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthState
 import store from './store';
 
 export default {
+  computed: {
+    userAuth() {
+      return store.getters.userAuth;
+    }
+  },
   methods: {
     checkAuthUser() {
-      onAuthStateChanged(store.state.userAuth, (user) => {
-        store.commit("saveUid", user.uid);
+      // if() {
+
+      // }
+      onAuthStateChanged(this.userAuth, (user) => {
         if(!user) {
           this.$router.push("/auth");
+        } else {
+          store.commit("saveUid", user.uid);
         }
       })
     }
@@ -22,6 +31,7 @@ export default {
   mounted() {
     store.dispatch("auth");
     this.checkAuthUser();
+    console.log(store.state)
   }
 }
 </script>
