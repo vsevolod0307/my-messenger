@@ -70,12 +70,9 @@ export default createStore({
       })
     },
     loadMessagesPersonal({commit, state}) {
-      console.log(this.state.userUid)
-      if(state.userUid) {
-        onValue(ref(getDatabase(), `users/(${state.userUid})/personal-chats`), (data) => {
-          commit("updateMessagesPersonal", data.val())
-        })
-      }
+      onValue(ref(getDatabase(), `users/(${state.userUid})/personal-chats`), (data) => {
+        commit("updateMessagesPersonal", data.val())
+      })
     },
     loadListUsers({commit, state}) {
       onValue(state.databaseRef, (data) => {
