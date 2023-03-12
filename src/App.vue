@@ -15,11 +15,11 @@ export default {
     }
   },
   methods: {
-    checkAuthUser() {
+    async checkAuthUser() {
       // if() {
 
       // }
-      onAuthStateChanged(this.userAuth, (user) => {
+      await onAuthStateChanged(this.userAuth, (user) => {
         if(!user) {
           this.$router.push("/auth");
         } else {
@@ -28,10 +28,9 @@ export default {
       })
     }
   },
-  mounted() {
+  async created() {
     store.dispatch("auth");
-    this.checkAuthUser();
-    console.log(store.state)
+    await this.checkAuthUser();
   }
 }
 </script>

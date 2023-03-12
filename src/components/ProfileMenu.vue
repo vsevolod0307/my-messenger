@@ -9,7 +9,10 @@
         <li class="profile-link">
             <a href="#">Друзья</a>
         </li><li class="profile-link">
-            <a href="#">Сообщения</a>
+            <router-link
+                to="/messages"
+            >Сообщения
+            </router-link>
         </li>
     </ul>
 </template>

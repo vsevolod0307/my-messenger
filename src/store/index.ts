@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getAuth, Auth } from "firebase/auth";
 import { createStore } from "vuex";
 import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
@@ -6,6 +7,7 @@ export default createStore({
   state: {
     userAuth: null,
     listUsers: [],
+    messagesPersonal: [],
     databaseRef: null,
     userUid: null
   },
@@ -19,6 +21,9 @@ export default createStore({
           ...item[1]
         }
       })
+    },
+    getMessagesPersonal(state) {
+      return state.messagesPersonal
     },
     getCurrentUser(state) {
       const currentUser = Object.entries(state.listUsers).find(user => user[0] === `(${state.userUid})`);
@@ -45,6 +50,9 @@ export default createStore({
     updateListUsers(state, data) {
       state.listUsers = data;
     },
+    updateMessagesPersonal(state, data) {
+      state.messagesPersonal = data;
+    },
     saveUid(state, uid) {
       state.userUid = uid;
     }
@@ -60,6 +68,14 @@ export default createStore({
       get(child(ref(getDatabase()), "users")).then(d => {
         commit("updateListUsers", d.val())
       })
+    },
+    loadMessagesPersonal({commit, state}) {
+      console.log(this.state.userUid)
+      if(state.userUid) {
+        onValue(ref(getDatabase(), `users/(${state.userUid})/personal-chats`), (data) => {
+          commit("updateMessagesPersonal", data.val())
+        })
+      }
     },
     loadListUsers({commit, state}) {
       onValue(state.databaseRef, (data) => {

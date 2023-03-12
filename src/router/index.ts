@@ -38,6 +38,11 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: "/messages",
+    name: "messages",
+    component: () => import('../views/MyMessages.vue')
   }
 ];
 
