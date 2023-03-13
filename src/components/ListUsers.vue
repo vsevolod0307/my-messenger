@@ -61,51 +61,58 @@ export default {
             console.log(this.currentUser)
             console.log(this.message)
             try {
-                onValue(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`), data => {
-                    if(!data.exists()) {
-                        isExist = false;
-                        const key = `is-${user.uid}`;
-                        set(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats`), {
-                            [key]: {
-                                info: {
-                                    first_name: user.first_name,
-                                    last_name: user.last_name
-                                }
-                            }
-                        }).then(() => isExist = true);
-                    }
-                })
-                onValue(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`), data => {
-                    if(!data.exists()) {
-                        isExist = false;
-                        const key = `is-${this.currentUser.uid}`;
-                        set(ref(getDatabase(), `users/(${user.uid})/personal-chats`), {
-                            [key]: {
-                                info: {
-                                    first_name: this.currentUser.first_name,
-                                    last_name: this.currentUser.last_name
-                                }
-                            }
-                        }).then(() => isExist = true);
-                    }
-                })
-                if (isExist) {
-                    set(push(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`)), {
-                        message: {
-                            body: this.message,
-                            datetime: new Date().toISOString(),
-                            fromMe: false
-                        }
-                    })
-
-                    set(push(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`)), {
-                        message: {
-                            body: this.message,
-                            datetime: new Date().toISOString(),
-                            fromMe: true
-                        }
-                    })
+                // onValue(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`), data => {
+                //     if(!data.exists()) {
+                //         isExist = false;
+                //         const key = `is-${user.uid}`;
+                //         set(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats`), {
+                //             [key]: {
+                //                 info: {
+                //                     first_name: user.first_name,
+                //                     last_name: user.last_name
+                //                 }
+                //             }
+                //         })
+                //         set(ref(getDatabase(), `users/(${user.uid})/personal-chats`), {
+                //             [key]: {
+                //                 info: {
+                //                     first_name: this.currentUser.first_name,
+                //                     last_name: this.currentUser.last_name
+                //                 }
+                //             }
+                //         }).then(() => isExist = true);
+                //     }
+                // })
+                // onValue(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`), data => {
+                //     if(!data.exists()) {
+                //         isExist = false;
+                //         const key = `is-${this.currentUser.uid}`;
+                //         set(ref(getDatabase(), `users/(${user.uid})/personal-chats`), {
+                //             [key]: {
+                //                 info: {
+                //                     first_name: this.currentUser.first_name,
+                //                     last_name: this.currentUser.last_name
+                //                 }
+                //             }
+                //         }).then(() => isExist = true);
+                //     }
+                // })
+            set(push(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`)), {
+                message: {
+                    body: this.message,
+                    datetime: new Date().toISOString(),
+                    fromMe: false
                 }
+            })
+
+            set(push(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`)), {
+                message: {
+                    body: this.message,
+                    datetime: new Date().toISOString(),
+                    fromMe: true
+                }
+            })
+                    
             } catch(e) {
                 console.log(e);
             } finally {
