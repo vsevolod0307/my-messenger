@@ -2,41 +2,27 @@
     <div v-if="getMessages" class="dialog-messages">
         <div class="dialog-aside">
             <ul class="dialog-users">
-                <li v-for="user, idx in getMessages.users" :key="idx" class="dialog-user" @click="getUser(user[idx])">
-                    <span v-if="user[idx]">{{ user[idx].first_name }} {{ user[idx].last_name }}</span>
+                <li v-for="user, idx in getMessages.users" :key="idx" class="dialog-user" @click="getUser(user.uid)">
+                    <span v-if="user">{{ user.first_name }} {{ user.last_name }}</span>
                 </li>
             </ul>
         </div>
-        <div v-if="!dialogMessage" class="dialog-message"></div>
-        <div v-if="dialogMessage" class="dialog-message">
-            <div v-for="value, idx in getMessages.dialog" :key="idx">
-                <div v-for="message, i in value" :key="i">
-                    <div :class="{
-                        'dialog-item': true,
-                        'right': message.fromMe,
-                        'left': !message.fromMe
-                        }">
-                        <div class="dialog-message_item">{{ message.body }}</div>
-                    </div>
-                </div>
-                <input 
-                    type="text" 
-                    placeholder="Введите сообщение" 
-                    class="dialog-input"
-                    v-model="message"
-                    @keyup.enter="sendMessage(uid)"
-                >
-            </div>
-        </div>
+        <dialog-messages
+            :uid="uid"
+            :user="user"
+            :dialogMessage="dialogMessage"
+        />
+        {{ cons(getMessages) }}
     </div>
 </template>
 
 <script>
 /* eslint-disable */
 import store from '@/store';
-import { set, ref, getDatabase, push, onValue } from 'firebase/database';
+import DialogMessages from "@/components/DialogMessages";
 export default {
     name: "Messages",
+    components: { DialogMessages },
     data() {
         return {
             message: "",
@@ -49,16 +35,23 @@ export default {
             store.dispatch("loadMessagesPersonal");
             if(store.getters.getMessagesPersonal && store.getters.getListUsers) {
                 return {
-                    dialog: Object.entries(store.getters.getMessagesPersonal).map(item => {
-                        return Object.values(item[1]).map(item => {
-                            return item.message
-                        })
+                    dialogs: Object.entries(store.getters.getMessagesPersonal).map(([key, item]) => {
+                        return {
+                            [key]: Object.values(item).map(message => {
+                                return message.message
+                            })
+                        }
                     }),
-                    users: Object.entries(store.getters.getMessagesPersonal).map(user => {
-                        const userUid = user[0].split("-")[1]
-                        return store.getters.getListUsers.filter(item => {
-                            return userUid === item.uid
-                        })
+                    users: Object.entries(store.getters.getMessagesPersonal).map((key) => {
+                        const userUid = key[0].split("-")[1]
+                        const user = store.getters.getListUsers.find(item => item.uid === userUid)
+                        if(user) {
+                            return {
+                                first_name: user.first_name,
+                                last_name: user.last_name,
+                                uid: user.uid
+                            }
+                        }
                     })
                 }
             }
@@ -71,10 +64,9 @@ export default {
         cons(i) {
             console.log(i)
         },
-        getUser(user) {
-            this.user = user;
+        getUser(uid) {
             this.dialogMessage = true;
-            console.log(this.user)
+            this.getPersonalDialog(uid)
         },
         sendMessage(uid) {
             try {
@@ -101,6 +93,10 @@ export default {
                 this.message = "";
             }
         },
+        getPersonalDialog(uid) {
+            const red = this.getMessages.dialogs.find((item, i) => Object.keys(item)[i] === `is-${uid}`)
+            console.log(red)
+        }
     },
     mounted() {
         store.dispatch("loadGetUsers");
@@ -119,35 +115,6 @@ export default {
         &-messages {
             display: flex;
             height: 80vh;
-        }
-        &-message {
-            width: 75%;
-            background-color: rgba(161, 235, 161, 0.5);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            &_item {
-                border: 1px solid #fff;
-                padding: 14px;
-                border-radius: 8px;
-                background-color: #e9e4e4;
-                box-shadow: inset 0px 0px 2px 0px;
-                font-size: 20px;
-            }
-        }
-        &-item {
-            display: flex;
-            margin: 4px 0;
-        }
-        &-input {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 4px;
-            border: none;
-            outline: none;
-            width: 94%;
         }
         &-user {
             height: 60px;
