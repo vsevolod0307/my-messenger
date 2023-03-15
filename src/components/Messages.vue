@@ -1,9 +1,9 @@
 <template>
-    <div class="dialog-messages">
+    <div v-if="getMessages" class="dialog-messages">
         <div class="dialog-aside">
             <ul class="dialog-users">
                 <li v-for="user, idx in getMessages.users" :key="idx" class="dialog-user" @click="getUser(user[idx])">
-                    <span>{{ user[idx].first_name }} {{ user[idx].last_name }}</span>
+                    <span v-if="user[idx]">{{ user[idx].first_name }} {{ user[idx].last_name }}</span>
                 </li>
             </ul>
         </div>
