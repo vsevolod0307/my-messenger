@@ -8,11 +8,11 @@
             </ul>
         </div>
         <dialog-messages
-            :uid="uid"
             :user="user"
+            :uid="dialogUid"
             :dialogMessage="dialogMessage"
+            @update-dialog="updateDialog"
         />
-        {{ cons(getMessages) }}
     </div>
 </template>
 
@@ -27,7 +27,8 @@ export default {
         return {
             message: "",
             user: null,
-            dialogMessage: false
+            dialogMessage: false,
+            dialogUid: ""
         }
     },
     computed: {
@@ -55,47 +56,24 @@ export default {
                     })
                 }
             }
-        },
-        uid() {
-            return store.state.userUid;
         }
     },
     methods: {
-        cons(i) {
-            console.log(i)
-        },
         getUser(uid) {
+            this.dialogUid = uid;
             this.dialogMessage = true;
-            this.getPersonalDialog(uid)
-        },
-        sendMessage(uid) {
-            try {
-                set(push(ref(getDatabase(), `users/(${uid})/personal-chats/is-${this.user.uid}`)), {
-                    message: {
-                        body: this.message,
-                        datetime: new Date().toISOString(),
-                        fromMe: true
-                    }
-                })
-
-                set(push(ref(getDatabase(), `users/(${this.user.uid})/personal-chats/is-${uid}`)), {
-                    message: {
-                        body: this.message,
-                        datetime: new Date().toISOString(),
-                        fromMe: false
-                    }
-                })
-                    
-            } catch(e) {
-                console.log(e);
-            } finally {
-                // this.isSend = false;
-                this.message = "";
-            }
+            this.getPersonalDialog(uid);
         },
         getPersonalDialog(uid) {
-            const red = this.getMessages.dialogs.find((item, i) => Object.keys(item)[i] === `is-${uid}`)
-            console.log(red)
+            this.getMessages.dialogs.forEach((item, i) => {
+                if(Object.keys(item)[0] === `is-${uid}`) {
+                    Object.values(item).forEach(item => this.user = [...item]);
+                }
+            })
+            this.user.flat(1);
+        },
+        updateDialog(uid) {
+            this.getUser(uid);
         }
     },
     mounted() {
@@ -126,27 +104,6 @@ export default {
                 background-color: rgb(173 204 255);
                 cursor: pointer;
             }
-        }
-    }
-    .right {
-        justify-content: flex-end;
-        > .dialog-message_item {
-            background-color: #6d7a81;
-            color: #fff;
-            text-align: right;
-        }
-    }
-    .left {
-        justify-content: flex-start;
-        > .dialog-message_item {
-            text-align: left;
-        }
-    }
-
-    @media (max-width: 425px) {
-        .dialog-message_item {
-            padding: 8px;
-            font-size: 18px;
         }
     }
 </style>

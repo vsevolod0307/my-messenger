@@ -1,31 +1,30 @@
 <template>
-    <div>
-        <!-- <div v-if="!dialogMessage" class="dialog-message"></div>
+    <div class="dialog-block">
+        <div v-if="!dialogMessage" class="dialog-message"></div>
         <div v-if="dialogMessage" class="dialog-message">
-            <div v-for="value, idx in dialog" :key="idx">
-                <div v-for="message, i in value" :key="i">
-                    <div :class="{
-                        'dialog-item': true,
-                        'right': user.fromMe,
-                        'left': !user.fromMe
-                        }">
-                        <div class="dialog-message_item">{{ user.body }}</div>
-                    </div>
+            <div v-for="message, i in user" :key="i">
+                <div :class="{
+                    'dialog-item': true,
+                    'right': message.fromMe,
+                    'left': !message.fromMe
+                    }">
+                    <div class="dialog-message_item">{{ message.body }}</div>
                 </div>
-                <input 
-                    type="text" 
-                    placeholder="Введите сообщение" 
-                    class="dialog-input"
-                    v-model="message"
-                    @keyup.enter="sendMessage(uid)"
-                >
             </div>
-        </div> -->
+        </div>
+        <input 
+            type="text" 
+            placeholder="Введите сообщение" 
+            class="dialog-input"
+            v-model="message"
+            @keyup.enter="sendMessage(uid)"
+        >
     </div>
 </template>
 
 <script>
 import { set, ref, getDatabase, push, onValue } from 'firebase/database';
+import store from '@/store';
 
 export default {
     name: "DialogMessages",
@@ -35,10 +34,15 @@ export default {
             message: ""
         }
     },
+    computed: {
+        uidUser() {
+            return store.state.userUid;
+        }
+    },
     methods: {
-        sendMessage(uid) {
+        sendMessage() {
             try {
-                set(push(ref(getDatabase(), `users/(${this.uid})/personal-chats/is-${this.user.uid}`)), {
+                set(push(ref(getDatabase(), `users/(${this.uidUser})/personal-chats/is-${this.uid}`)), {
                     message: {
                         body: this.message,
                         datetime: new Date().toISOString(),
@@ -46,21 +50,21 @@ export default {
                     }
                 })
 
-                set(push(ref(getDatabase(), `users/(${this.user.uid})/personal-chats/is-${this.uid}`)), {
+                set(push(ref(getDatabase(), `users/(${this.uid})/personal-chats/is-${this.uidUser}`)), {
                     message: {
                         body: this.message,
                         datetime: new Date().toISOString(),
                         fromMe: false
                     }
                 })
-                    
+
+                this.$emit("update-dialog", this.uid);
             } catch(e) {
                 console.log(e);
             } finally {
-                // this.isSend = false;
                 this.message = "";
             }
-        },
+        }
     }
 }
 </script>
@@ -68,12 +72,12 @@ export default {
 <style lang="scss" scoped>
     .dialog {
         &-message {
-            width: 75%;
-            background-color: rgba(161, 235, 161, 0.5);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            &::-webkit-scrollbar {
+                width: 0;
+            }
             &_item {
                 border: 1px solid #fff;
                 padding: 14px;
@@ -88,13 +92,44 @@ export default {
             margin: 4px 0;
         }
         &-input {
-            margin-top: 20px;
             padding: 10px;
             font-size: 16px;
             border-radius: 4px;
             border: none;
             outline: none;
-            width: 94%;
+            width: 94.5%;
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            margin-left: 2%;
+        }
+        &-block {
+            width: 75%;
+            background-color: rgba(161, 235, 161, 0.5);
+            padding: 20px;
+            padding-bottom: 80px;
+            position: relative;
+        }
+    }
+    .right {
+        justify-content: flex-end;
+        > .dialog-message_item {
+            background-color: #6d7a81;
+            color: #fff;
+            text-align: right;
+        }
+    }
+    .left {
+        justify-content: flex-start;
+        > .dialog-message_item {
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 425px) {
+        .dialog-message_item {
+            padding: 8px;
+            font-size: 18px;
         }
     }
 </style>
