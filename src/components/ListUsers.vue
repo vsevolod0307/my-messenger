@@ -8,24 +8,26 @@
     </div>
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
-            <div class="list-user_avatar">
-                <img :src="user.avatarUrl" alt="">
+            <div class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
+                <!-- <img :src="user.avatarUrl" alt=""> -->
             </div>
-            <div class="list-user_name">
-                <span>{{ user.first_name }}</span>
-                <span>{{ user.last_name }}</span>
+            <div class="list-user_info">
+                <div class="list-user_name">
+                    <span>{{ user.first_name }}</span>
+                    <span>{{ user.last_name }}</span>
+                </div>
+                <div class="list-user_age">
+                    <span>Возраст: </span>
+                    <span>{{ user.age }}</span>
+                </div>
+                <button class="list-user_send" @click="getUser(user)">Написать сообщение</button>
             </div>
-            <div class="list-user_age">
-                <span>Возраст: </span>
-                <span>{{ user.age }}</span>
-            </div>
-            <button class="list-user_send" @click="getUser(user)">Написать сообщение</button>
         </li>
     </ul>
     <div v-if="isSend" class="send-modal">
         <form action="#">
             <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
-            <button @click.prevent="sendMessage(user)" type="submit">Отправить</button>
+            <button @click.prevent="sendMessage(user)" type="submi">Отправить</button>
         </form>
     </div>
 </template>
@@ -139,30 +141,38 @@ export default {
     }
     .list-user {
         display: flex;
-        border: 1px solid;
         margin: 20px 0;
+        box-shadow: 1px 1px 9px 2px #e5dddd;
         &_avatar {
             min-width: 150px;
-            img {
-                width: 150px;
-                height: 100%;
-            }
+            height: 150px;
         }
         &_name, &_age {
             padding: 10px 20px;
+        }
+        &_name > span:first-child {
+            margin-right: 6px;
         }
         &_send {
             background-color: #a1eba1;
             border: none;
             border-radius: 6px;
             padding: 10px;
-            font-size: 18px;
             height: 40px;
             text-transform: uppercase;
             cursor: pointer;
+            margin-top: 20px;
+            margin-left: 20px;
+            font-size: 14px;
+            font-weight: 600;
             &:hover {
                 background-color: rgba(161,  235,  161, 0.5);
             }
+        }
+        &_info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
     }
 </style>
