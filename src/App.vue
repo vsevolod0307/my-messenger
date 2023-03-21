@@ -11,21 +11,21 @@
   <router-view />
 </template>
 
-<script>
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut } from 'firebase/auth';
+<script lang="ts">
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut, Auth } from 'firebase/auth';
 import store from './store';
 
 export default {
   computed: {
-    userAuth() {
+    userAuth(): Auth {
       return store.getters.userAuth;
     },
-    userUid() {
+    userUid(): string {
       return store.getters.userUid;
     }
   },
   methods: {
-    async checkAuthUser() {
+    async checkAuthUser(): Promise<void> {
       await onAuthStateChanged(this.userAuth, (user) => {
         if(!user) {
           this.$router.push("/auth");
@@ -35,9 +35,9 @@ export default {
       })
     }
   },
-  async created() {
+  created(): void {
     store.dispatch("auth");
-    await this.checkAuthUser();
+    this.checkAuthUser();
   }
 }
 </script>

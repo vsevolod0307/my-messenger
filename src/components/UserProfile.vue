@@ -30,7 +30,7 @@
     <profile-menu/>
 </template>
 
-<script>
+<script lang="ts">
 import { signOut, getAuth } from 'firebase/auth';
 import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
 import ProfileEdit from "@/components/ProfileEdit.vue";
@@ -38,27 +38,36 @@ import ProfileMenu from "@/components/ProfileMenu.vue";
 import { getMessaging, getToken } from "firebase/messaging";
 import store from '@/store';
 
+interface dataPersonal {
+    gender: string,
+    first_name: string,
+    last_name: string,
+    about_us: string,
+    age: number,
+    avatarUrl: string
+}
+
 export default {
     data() {
         return {
-            data: "uuu",
+            data: null as dataPersonal,
             isEdit: false
         }
     },
     components: { ProfileEdit, ProfileMenu },
     computed: {
-        uid() {
+        uid(): string {
             return store.state.userUid;
         }
     },
     methods: {
-        signOutUser() {
+        signOutUser(): void {
             signOut(store.state.userAuth);
         },
-        getGender() {
+        getGender(): string {
             return this.data.gender === "male" ? "Мужчина" : "Женщина";
         },
-        updateDataProfile() {
+        updateDataProfile(): void {
             onValue(store.state.databaseRef, data => {
                 console.log(data.val())
                 if(data.exists()) {
@@ -74,7 +83,7 @@ export default {
         //     })
         // }
     },
-    mounted() {
+    mounted(): void {
         store.dispatch("databaseRef", `users/(${this.$route.params.id})`)
         this.updateDataProfile();
 

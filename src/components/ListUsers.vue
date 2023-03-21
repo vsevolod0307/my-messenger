@@ -25,32 +25,43 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import store from '@/store';
 import { set, ref, getDatabase, push, onValue } from 'firebase/database';
 import { getAuth, Auth } from 'firebase/auth';
+
+interface User {
+    gender: string,
+    first_name: string,
+    last_name: string,
+    about_us: string,
+    age: number,
+    avatarUrl: string,
+    uid: string
+}
+
 export default {
     name: "ListUsers",
     data() {
         return {
             isSend: false,
             message: "",
-            user: ""
+            user: null as User
         }
     },
     computed: {
-        listUsers() {
+        listUsers(): User[] {
             return store.getters.getListUsers;
         },
-        uid() {
+        uid(): string {
             return store.state.userUid;
         },
-        currentUser() {
+        currentUser(): User {
             return store.getters.getCurrentUser;
         }
     },
     methods: {
-        sendMessage(user) {
+        sendMessage(user: User) {
             let isExist = true;
             console.log(user);
             console.log(this.currentUser)
@@ -115,7 +126,7 @@ export default {
                 // this.message = "";
             }
         },
-        getUser(user) {
+        getUser(user: User) {
             this.isSend = true
             this.user = user;
         }
