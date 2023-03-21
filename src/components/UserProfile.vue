@@ -68,33 +68,32 @@ export default {
                 }
             })
         },
-        // requestPermission() {
-        //     Notification.requestPermission().then(per => {
-        //         console.log(per);
-        //     })
-        // }
+        requestPermission() {
+            Notification.requestPermission().then(per => {
+                console.log(per);
+            })
+        }
     },
     mounted() {
         store.dispatch("databaseRef", `users/(${this.$route.params.id})`)
         this.updateDataProfile();
-        
-        // console.log(getMessaging());
-        // this.requestPermission();
-        // const messaging = getMessaging();
-        // getToken(messaging, { vapidKey: "BP9SY499ZYNuBIwzAEAiUDuZ2CSEigCIj6qfzkfIuoKAMpEcISRAWaQT7XL8nAt8ogDj2dpIJapauo8G1by0VOk" }).then((currentToken) => {
-        //     if (currentToken) {
-        //         // Send the token to your server and update the UI if necessary
-        //         // console.log(currentToken);
-        //         // ...
-        //     } else {
-        //         // Show permission request UI
-        //         console.log('No registration token available. Request permission to generate one.');
-        //         // ...
-        //     }
-        //     }).catch((err) => {
-        //     console.log('An error occurred while retrieving token. ', err);
-        //     // ...
-        // });
+
+        this.requestPermission();
+        const messaging = getMessaging();
+        getToken(messaging, { vapidKey: "BP9SY499ZYNuBIwzAEAiUDuZ2CSEigCIj6qfzkfIuoKAMpEcISRAWaQT7XL8nAt8ogDj2dpIJapauo8G1by0VOk" }).then((currentToken) => {
+            if (currentToken) {
+                // Send the token to your server and update the UI if necessary
+                console.log(currentToken);
+                // ...
+            } else {
+                // Show permission request UI
+                console.log('No registration token available. Request permission to generate one.');
+                // ...
+            }
+            }).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+            // ...
+        });
     }
 }
 </script>

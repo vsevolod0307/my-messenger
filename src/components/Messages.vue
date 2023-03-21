@@ -11,7 +11,6 @@
             :user="user"
             :uid="dialogUid"
             :dialogMessage="dialogMessage"
-            @update-dialog="updateDialog"
         />
     </div>
 </template>
@@ -25,7 +24,6 @@ export default {
     components: { DialogMessages },
     data() {
         return {
-            message: "",
             user: null,
             dialogMessage: false,
             dialogUid: ""
@@ -58,22 +56,33 @@ export default {
             }
         }
     },
+    watch: {
+        'getMessages.dialogs': {
+            handler(updatedUser) {
+                if(Array.isArray(updatedUser)) {
+                    if(updatedUser.length && this.dialogUid) {
+                        this.getPersonalDialog(updatedUser, this.dialogUid)
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        },
+        dialogUid(updatedDialog) {
+            this.getPersonalDialog(this.getMessages.dialogs, updatedDialog)
+        }
+    },
     methods: {
         getUser(uid) {
             this.dialogUid = uid;
             this.dialogMessage = true;
-            this.getPersonalDialog(uid);
         },
-        getPersonalDialog(uid) {
-            this.getMessages.dialogs.forEach((item, i) => {
+        getPersonalDialog(dialogs, uid) {
+            dialogs.forEach(item => {
                 if(Object.keys(item)[0] === `is-${uid}`) {
                     Object.values(item).forEach(item => this.user = [...item]);
                 }
             })
-            this.user.flat(1);
-        },
-        updateDialog(uid) {
-            this.getUser(uid);
         }
     },
     mounted() {

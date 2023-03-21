@@ -16,9 +16,6 @@ export default {
   },
   methods: {
     async checkAuthUser() {
-      // if() {
-
-      // }
       await onAuthStateChanged(this.userAuth, (user) => {
         if(!user) {
           this.$router.push("/auth");

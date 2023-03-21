@@ -47,6 +47,7 @@ export default {
     methods: {
         sendMessage() {
             try {
+                if(!this.message) return;
                 set(push(ref(getDatabase(), `users/(${this.uidUser})/personal-chats/is-${this.uid}`)), {
                     message: {
                         body: this.message,
@@ -62,8 +63,6 @@ export default {
                         fromMe: false
                     }
                 })
-
-                this.$emit("update-dialog", this.uid);
             } catch(e) {
                 console.log(e);
             } finally {
@@ -97,6 +96,7 @@ export default {
                 background-color: #e9e4e4;
                 box-shadow: inset 0px 0px 2px 0px;
                 font-size: 20px;
+                max-width: 400px;
             }
             &_datetime {
                 font-size: 8px;
