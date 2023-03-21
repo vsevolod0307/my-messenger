@@ -1,11 +1,4 @@
 <template>
-    <div class="my-profile">
-        <router-link
-            v-if="uid" 
-            :to="{ name: 'profile', params: { id: uid } }"
-        >
-        мой профиль</router-link>
-    </div>
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
             <div class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">

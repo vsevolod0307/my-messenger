@@ -1,5 +1,12 @@
 <template>
   <nav>
+    <div class="my-profile">
+        <router-link
+            v-if="userUid" 
+            :to="{ name: 'profile', params: { id: userUid } }"
+        >
+        мой профиль</router-link>
+    </div>
   </nav>
   <router-view />
 </template>
@@ -12,6 +19,9 @@ export default {
   computed: {
     userAuth() {
       return store.getters.userAuth;
+    },
+    userUid() {
+      return store.getters.userUid;
     }
   },
   methods: {
