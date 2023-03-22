@@ -20,15 +20,14 @@
     <div v-if="isSend" class="send-modal">
         <form action="#">
             <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
-            <button @click.prevent="sendMessage(user)" type="submi">Отправить</button>
+            <button @click.prevent="sendMessage(user)" type="submit">Отправить</button>
         </form>
     </div>
 </template>
 
 <script lang="ts">
 import store from '@/store';
-import { set, ref, getDatabase, push, onValue } from 'firebase/database';
-import { getAuth, Auth } from 'firebase/auth';
+import { set, ref, getDatabase, push } from 'firebase/database';
 
 interface User {
     gender: string,
@@ -62,7 +61,6 @@ export default {
     },
     methods: {
         sendMessage(user: User) {
-            let isExist = true;
             console.log(user);
             console.log(this.currentUser)
             console.log(this.message)

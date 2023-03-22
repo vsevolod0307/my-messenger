@@ -5,14 +5,22 @@
             v-if="userUid" 
             :to="{ name: 'profile', params: { id: userUid } }"
         >
-        мой профиль</router-link>
+        <img src="@/assets/profile.png" alt=""></router-link>
+        <router-link
+                to="/messages"
+            ><img src="@/assets/message.png" alt="">
+        </router-link>
+        <router-link
+            to="/all-users"
+        ><img src="@/assets/all.png" alt="">
+        </router-link>
     </div>
   </nav>
   <router-view />
 </template>
 
 <script lang="ts">
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, getAuth, User, signOut, Auth } from 'firebase/auth';
+import { onAuthStateChanged, Auth } from 'firebase/auth';
 import store from './store';
 
 export default {
@@ -49,6 +57,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  overflow-x: hidden;
 }
 
 * {
@@ -58,7 +67,7 @@ export default {
 
 nav {
   padding: 30px;
-
+  background-color: #d0f5d0;
   a {
     font-weight: bold;
     color: #2c3e50;
@@ -66,6 +75,19 @@ nav {
     &.router-link-exact-active {
       color: #42b983;
     }
+  }
+  img {
+    width: 40px;
+  }
+}
+.my-profile {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+@media (max-width: 425px) {
+  nav {
+    padding: 20px;
   }
 }
 </style>

@@ -1,18 +1,12 @@
 <template>
     <ul class="profile-menu">
         <li class="profile-link">
-            <router-link
-                to="/all-users"
-            >Все пользователи
-            </router-link>
+            
         </li>
         <li class="profile-link">
             <a href="#">Друзья</a>
         </li><li class="profile-link">
-            <router-link
-                to="/messages"
-            >Сообщения
-            </router-link>
+            
         </li>
     </ul>
 </template>

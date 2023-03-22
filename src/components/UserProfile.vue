@@ -27,15 +27,14 @@
             <button class="sign-out" @click="signOutUser">Выйти</button>
         </div>
     </div>
-    <profile-menu/>
+    <profile-menu v-if="!isEdit"/>
 </template>
 
 <script lang="ts">
-import { signOut, getAuth } from 'firebase/auth';
-import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
+import { signOut } from 'firebase/auth';
+import { onValue } from "firebase/database";
 import ProfileEdit from "@/components/ProfileEdit.vue";
 import ProfileMenu from "@/components/ProfileMenu.vue";
-import { getMessaging, getToken } from "firebase/messaging";
 import store from '@/store';
 import { dataPersonal } from "@/types/user";
 
@@ -192,5 +191,19 @@ export default {
         background-color: #a1eba1;
         width: 70%;
         margin-top: 20px;
+    }
+    @media(max-width: 425px) {
+        .profile {
+            margin-top: 30px;
+            &-about {
+                width: 200px;
+            }
+            &-info {
+                padding: 40px;
+            }
+            &-main-actions {
+                top: 90px;
+            }
+        }
     }
 </style>

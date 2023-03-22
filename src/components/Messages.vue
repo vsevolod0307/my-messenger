@@ -15,16 +15,18 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 /* eslint-disable */
 import store from '@/store';
-import DialogMessages from "@/components/DialogMessages";
+import DialogMessages from "@/components/DialogMessages.vue";
+import { User } from '@/types/user';
+import { Message } from '@/types/chats';
 export default {
     name: "Messages",
     components: { DialogMessages },
     data() {
         return {
-            user: null,
+            user: {} as User,
             dialogMessage: false,
             dialogUid: ""
         }
@@ -36,8 +38,8 @@ export default {
                 return {
                     dialogs: Object.entries(store.getters.getMessagesPersonal).map(([key, item]) => {
                         return {
-                            [key]: Object.values(item).map(message => {
-                                return message.message
+                            [key]: Object.values(item).map((message) => {
+                                return message.message as Message;
                             })
                         }
                     }),
@@ -73,11 +75,11 @@ export default {
         }
     },
     methods: {
-        getUser(uid) {
+        getUser(uid: string) {
             this.dialogUid = uid;
             this.dialogMessage = true;
         },
-        getPersonalDialog(dialogs, uid) {
+        getPersonalDialog(dialogs, uid: string) {
             dialogs.forEach(item => {
                 if(Object.keys(item)[0] === `is-${uid}`) {
                     Object.values(item).forEach(item => this.user = [...item]);
@@ -98,10 +100,16 @@ export default {
             border-right: 2px solid;
             height: 100%;
             background-color: #d7e6ff;
+            border-radius: 20px 0 0 20px;
         }
         &-messages {
             display: flex;
             height: 80vh;
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 40px;
+            box-shadow: 4px -3px 8px -7px cadetblue;
+            border-radius: 20px;
         }
         &-user {
             height: 60px;
@@ -112,6 +120,15 @@ export default {
             &:hover {
                 background-color: rgb(173 204 255);
                 cursor: pointer;
+            }
+        }
+    }
+
+    @media(max-width: 425px) {
+        .dialog {
+            &-messages {
+                margin-top: 12px;
+                width: 96%;
             }
         }
     }

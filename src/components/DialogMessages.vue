@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { set, ref, getDatabase, push, onValue } from 'firebase/database';
+import { set, ref, getDatabase, push } from 'firebase/database';
 import store from '@/store';
 
 export default {
@@ -128,10 +128,13 @@ export default {
             padding: 20px;
             padding-bottom: 80px;
             position: relative;
-            left: 1100px;
-            transition: 1s all;
+            left: 0;
+            opacity: 0;
+            transition: .5s all;
+            padding-top: 0;
+            border-radius: 0 20px 20px 0;
             &.show-dailog {
-                left: 0;
+                opacity: 1;
             }
         }
     }
@@ -155,8 +158,8 @@ export default {
 
     @media (max-width: 425px) {
         .dialog {
-            &-block {
-                left: 400px;
+            &-input {
+                width: 90%;
             }
             &-message_item {
                 padding: 8px;

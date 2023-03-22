@@ -27,9 +27,8 @@
 </template>
 
 <script>
-import { getDatabase, set, ref, onValue, get, child, onChildAdded } from "firebase/database";
+import { getDatabase, set, ref } from "firebase/database";
 import { getStorage, ref as refStor, uploadBytes, getDownloadURL } from 'firebase/storage';
-import store from '@/store';
 
 export default {
     name: "ProfleEdit",
@@ -83,6 +82,13 @@ export default {
             padding: 10px;
             font-size: 16px;
         }
+        &-edit .about_us {
+            margin-top: 20px;
+            resize: none;
+            width: 94%;
+            height: 120px;
+            padding: 10px;
+        }
     }
     .save-changes {
         background-color: rgb(245 64 68);
@@ -122,4 +128,12 @@ export default {
         width: 70%;
         margin-top: 20px;
     }
+
+    // @media () {
+    //     .profile{
+    //         &-edit {
+                
+    //         }
+    //     }
+    // }
 </style>
