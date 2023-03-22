@@ -3,7 +3,3 @@ export interface Message {
     datetime: string,
     fromMe: boolean
 }
-
-export interface PersonalChats {
-    [key: string]: [key: []]
-};
