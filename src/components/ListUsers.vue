@@ -46,7 +46,7 @@ export default {
         return {
             isSend: false,
             message: "",
-            user: null as User
+            user: {} as User
         }
     },
     computed: {

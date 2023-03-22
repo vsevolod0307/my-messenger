@@ -37,20 +37,12 @@ import ProfileEdit from "@/components/ProfileEdit.vue";
 import ProfileMenu from "@/components/ProfileMenu.vue";
 import { getMessaging, getToken } from "firebase/messaging";
 import store from '@/store';
-
-interface dataPersonal {
-    gender: string,
-    first_name: string,
-    last_name: string,
-    about_us: string,
-    age: number,
-    avatarUrl: string
-}
+import { dataPersonal } from "@/types/user";
 
 export default {
     data() {
         return {
-            data: null as dataPersonal,
+            data: {} as dataPersonal,
             isEdit: false
         }
     },

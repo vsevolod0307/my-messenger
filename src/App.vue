@@ -25,8 +25,8 @@ export default {
     }
   },
   methods: {
-    async checkAuthUser(): Promise<void> {
-      await onAuthStateChanged(this.userAuth, (user) => {
+    checkAuthUser(): void {
+      onAuthStateChanged(this.userAuth, (user) => {
         if(!user) {
           this.$router.push("/auth");
         } else {
