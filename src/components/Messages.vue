@@ -15,7 +15,7 @@
     </div>
 </template>
 
-<script lang="ts">
+<script>
 /* eslint-disable */
 import store from '@/store';
 import DialogMessages from "@/components/DialogMessages.vue";
@@ -26,7 +26,7 @@ export default {
     components: { DialogMessages },
     data() {
         return {
-            user: {} as User,
+            user: null,
             dialogMessage: false,
             dialogUid: ""
         }
@@ -39,7 +39,7 @@ export default {
                     dialogs: Object.entries(store.getters.getMessagesPersonal).map(([key, item]) => {
                         return {
                             [key]: Object.values(item).map((message) => {
-                                return message.message as Message;
+                                return message.message;
                             })
                         }
                     }),
@@ -75,11 +75,11 @@ export default {
         }
     },
     methods: {
-        getUser(uid: string) {
+        getUser(uid) {
             this.dialogUid = uid;
             this.dialogMessage = true;
         },
-        getPersonalDialog(dialogs, uid: string) {
+        getPersonalDialog(dialogs, uid) {
             dialogs.forEach(item => {
                 if(Object.keys(item)[0] === `is-${uid}`) {
                     Object.values(item).forEach(item => this.user = [...item]);
