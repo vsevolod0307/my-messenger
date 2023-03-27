@@ -3,17 +3,20 @@ import { getAuth, Auth } from "firebase/auth";
 import { createStore } from "vuex";
 import { getDatabase, set, ref, onValue, get, child, onChildAdded, DatabaseReference } from "firebase/database";
 import { User, CurrentUser } from "@/types/user";
+import { PersonalChats } from "@/types/chats";
+import { getRandomNumber } from "@/helpers/functions";
 
 export default createStore({
   state: {
     userAuth: {} as Auth,
     listUsers: [] as User[],
-    messagesPersonal: [],
+    messagesPersonal: {} as PersonalChats,
     databaseRef: {} as DatabaseReference,
     userUid: "" as string
   },
   getters: {
     getListUsers(state): User[] {
+      console.log(state.listUsers)
       const filterList = Object.entries(state.listUsers).filter(user => user[0] !== `(${state.userUid})`)
       return filterList.map(item => {
         const regExpDelBrackets = /[()]/g;
@@ -23,7 +26,7 @@ export default createStore({
         }
       })
     },
-    getMessagesPersonal(state) {
+    getMessagesPersonal(state): PersonalChats {
       return state.messagesPersonal
     },
     getCurrentUser(state): CurrentUser | undefined {
@@ -67,9 +70,24 @@ export default createStore({
     databaseRef(context, pathDb): void {
       context.commit("databaseRef", pathDb);
     },
-    loadGetUsers({commit}): void {
-      get(child(ref(getDatabase()), "users")).then(d => {
-        commit("updateListUsers", d.val())
+    async loadGetUsers({commit}): Promise<void> {
+      get(child(ref(getDatabase()), "users")).then(async d => {
+        let commonData: any;
+        await fetch(`https://randomuser.me/api?results=${getRandomNumber(6, 18)}`)
+        .then(res => res.json())
+        .then(res => commonData = res.results);
+        console.log(commonData)
+        commonData = commonData.map((item: any) => {
+          return {
+            gender: item.gender,
+            first_name: item.name.first,
+            last_name: item.name.last,
+            age: item.dob.age,
+            avatarUrl: item.picture.large,
+            about_us: "---"
+          }
+        })
+        commit("updateListUsers", [...Object.values(d.val()), ...commonData])
       })
     },
     loadMessagesPersonal({commit, state}): void {

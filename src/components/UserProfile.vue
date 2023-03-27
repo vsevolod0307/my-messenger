@@ -115,6 +115,7 @@ export default {
             font-size: 16px;
         }
         &-info {
+            margin-top: 20px;
             padding: 40px 60px;
             border-radius: 30px;
             box-shadow: inset 0px 0px 12px 8px;
