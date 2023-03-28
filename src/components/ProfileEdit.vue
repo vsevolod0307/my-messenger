@@ -29,6 +29,7 @@
 <script>
 import { getDatabase, set, ref } from "firebase/database";
 import { getStorage, ref as refStor, uploadBytes, getDownloadURL } from 'firebase/storage';
+import store from '@/store';
 
 export default {
     name: "ProfleEdit",
@@ -55,18 +56,11 @@ export default {
             })
             this.$emit("edit", false)
         },
-        editImage(imageUrl) {
-            const storage = getStorage();
-            const storRef = refStor(storage, `users/${this.$route.params.id}/avatar`);
-            console.log("es")
-            uploadBytes(storRef, imageUrl.target.files[0]);
-            getDownloadURL(refStor(storage, `users/${this.$route.params.id}/avatar`))
-                .then((url) => this.dataEdit.avatarUrl = url);
+        async editImage(imageUrl) {
+            const storRef = refStor(getStorage(), `users/${store.state.userUid}/avatar`);
+            await uploadBytes(storRef, imageUrl.target.files[0]);
+            await getDownloadURL(storRef).then(url => this.dataEdit.avatarUrl = url)
         },
-    },
-    mounted() {
-        console.log(this.data)
-        console.log(this.dataEdit)
     }
 }
 </script>

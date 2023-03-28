@@ -15,17 +15,6 @@ export default createStore({
     userUid: "" as string
   },
   getters: {
-    getListUsers(state): User[] {
-      console.log(state.listUsers)
-      const filterList = Object.entries(state.listUsers).filter(user => user[0] !== `(${state.userUid})`)
-      return filterList.map(item => {
-        const regExpDelBrackets = /[()]/g;
-        return {
-          uid: item[0].replace(regExpDelBrackets, ""),
-          ...item[1]
-        }
-      })
-    },
     getMessagesPersonal(state): PersonalChats {
       return state.messagesPersonal
     },
@@ -70,13 +59,12 @@ export default createStore({
     databaseRef(context, pathDb): void {
       context.commit("databaseRef", pathDb);
     },
-    async loadGetUsers({commit}): Promise<void> {
+    async loadGetUsers({commit, state}): Promise<void> {
       get(child(ref(getDatabase()), "users")).then(async d => {
         let commonData: any;
         await fetch(`https://randomuser.me/api?results=${getRandomNumber(6, 18)}`)
         .then(res => res.json())
         .then(res => commonData = res.results);
-        console.log(commonData)
         commonData = commonData.map((item: any) => {
           return {
             gender: item.gender,
@@ -87,7 +75,15 @@ export default createStore({
             about_us: "---"
           }
         })
-        commit("updateListUsers", [...Object.values(d.val()), ...commonData])
+        const filterList = Object.entries(d.val()).filter(user => user[0] !== `(${state.userUid})`)
+        const mainData = filterList.map(item => {
+          const regExpDelBrackets = /[()]/g;
+          return {
+            uid: item[0].replace(regExpDelBrackets, ""),
+            ...item[1] as User[]
+          }
+        })
+        commit("updateListUsers", [...mainData, ...commonData])
       })
     },
     loadMessagesPersonal({commit, state}): void {

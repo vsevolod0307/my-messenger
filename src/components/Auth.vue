@@ -37,7 +37,6 @@ export default {
                 this.$router.push({name: "profile", params: { id: credentialUser.user.uid }})
             })
             .catch((error) => {
-                console.log(this.auth)
                 console.log(error.code);
                 console.log(error.message);
             })

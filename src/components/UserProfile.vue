@@ -60,7 +60,6 @@ export default {
         },
         updateDataProfile(): void {
             onValue(store.state.databaseRef, data => {
-                console.log(data.val())
                 if(data.exists()) {
                     this.data = data.val();
                 } else {

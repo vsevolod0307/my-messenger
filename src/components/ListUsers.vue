@@ -17,10 +17,10 @@
             </div>
         </li>
     </ul>
-    <div v-if="isSend" class="send-modal">
+    <div v-if="isSend" class="send-modal" @click.self="isSend = false">
         <form action="#">
             <textarea name="" id="" cols="30" rows="10" placeholder="Введите сообщение" v-model="message"></textarea>
-            <button @click.prevent="sendMessage(user)" type="submit">Отправить</button>
+            <button class="list-user_send" @click.prevent="sendMessage(user)" type="submit">Отправить</button>
         </form>
     </div>
 </template>
@@ -28,16 +28,7 @@
 <script lang="ts">
 import store from '@/store';
 import { set, ref, getDatabase, push } from 'firebase/database';
-
-interface User {
-    gender: string,
-    first_name: string,
-    last_name: string,
-    about_us: string,
-    age: number,
-    avatarUrl: string,
-    uid: string
-}
+import { User } from '@/types/user';
 
 export default {
     name: "ListUsers",
@@ -50,7 +41,7 @@ export default {
     },
     computed: {
         listUsers(): User[] {
-            return store.getters.getListUsers;
+            return store.state.listUsers;
         },
         uid(): string {
             return store.state.userUid;
@@ -61,67 +52,27 @@ export default {
     },
     methods: {
         sendMessage(user: User) {
-            console.log(user);
-            console.log(this.currentUser)
-            console.log(this.message)
             try {
-                // onValue(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`), data => {
-                //     if(!data.exists()) {
-                //         isExist = false;
-                //         const key = `is-${user.uid}`;
-                //         set(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats`), {
-                //             [key]: {
-                //                 info: {
-                //                     first_name: user.first_name,
-                //                     last_name: user.last_name
-                //                 }
-                //             }
-                //         })
-                //         set(ref(getDatabase(), `users/(${user.uid})/personal-chats`), {
-                //             [key]: {
-                //                 info: {
-                //                     first_name: this.currentUser.first_name,
-                //                     last_name: this.currentUser.last_name
-                //                 }
-                //             }
-                //         }).then(() => isExist = true);
-                //     }
-                // })
-                // onValue(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`), data => {
-                //     if(!data.exists()) {
-                //         isExist = false;
-                //         const key = `is-${this.currentUser.uid}`;
-                //         set(ref(getDatabase(), `users/(${user.uid})/personal-chats`), {
-                //             [key]: {
-                //                 info: {
-                //                     first_name: this.currentUser.first_name,
-                //                     last_name: this.currentUser.last_name
-                //                 }
-                //             }
-                //         }).then(() => isExist = true);
-                //     }
-                // })
-            set(push(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.currentUser.uid}`)), {
-                message: {
-                    body: this.message,
-                    datetime: new Date().toISOString(),
-                    fromMe: false
-                }
-            })
+                set(push(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.uid}`)), {
+                    message: {
+                        body: this.message,
+                        datetime: new Date().toISOString(),
+                        fromMe: false
+                    }
+                })
 
-            set(push(ref(getDatabase(), `users/(${this.currentUser.uid})/personal-chats/is-${user.uid}`)), {
-                message: {
-                    body: this.message,
-                    datetime: new Date().toISOString(),
-                    fromMe: true
-                }
-            })
-                    
+                set(push(ref(getDatabase(), `users/(${this.uid})/personal-chats/is-${user.uid}`)), {
+                    message: {
+                        body: this.message,
+                        datetime: new Date().toISOString(),
+                        fromMe: true
+                    }
+                }) 
+                this.message = "";
             } catch(e) {
                 console.log(e);
             } finally {
                 this.isSend = false;
-                // this.message = "";
             }
         },
         getUser(user: User) {
@@ -130,8 +81,6 @@ export default {
         }
     },
     mounted() {
-        // this.uid = store.state.userUid;
-        // store.dispatch("databaseRef", "users");
         store.dispatch("loadGetUsers");
     }
 }
@@ -175,6 +124,49 @@ export default {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+        }
+    }
+    .send-modal {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        backdrop-filter: grayscale(1);
+        form {
+            position: absolute;
+            top: 350px;
+            left: 42vw;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            button {
+                margin: 0;
+            }
+            textarea {
+                padding: 10px;
+                border-radius: 10px;
+                resize: none;
+                border: none;
+                box-shadow: 1px 1px 7px 3px;
+                outline: none;
+            }
+        }
+    }
+
+    @media (max-width: 425px) {
+        .list-user_avatar {
+            min-width: 120px;
+            height: 120px;
+        }
+        .list-user_send {
+            height: 35px;
+            font-size: 12px;
+        }
+        .list-user_name, .list-user_age {
+            padding: 5px 20px;
+        }
+        .send-modal form{
+            left: 18vw;
         }
     }
 </style>

@@ -34,7 +34,7 @@ export default {
     computed: {
         getMessages() {
             store.dispatch("loadMessagesPersonal");
-            if(store.getters.getMessagesPersonal && store.getters.getListUsers) {
+            if(store.getters.getMessagesPersonal && store.state.listUsers) {
                 return {
                     dialogs: Object.entries(store.getters.getMessagesPersonal).map(([key, item]) => {
                         return {
@@ -45,7 +45,7 @@ export default {
                     }),
                     users: Object.entries(store.getters.getMessagesPersonal).map((key) => {
                         const userUid = key[0].split("-")[1]
-                        const user = store.getters.getListUsers.find(item => item.uid === userUid)
+                        const user = store.state.listUsers.find(item => item.uid === userUid)
                         if(user) {
                             return {
                                 first_name: user.first_name,

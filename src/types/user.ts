@@ -13,7 +13,8 @@ export interface User {
   last_name: string,
   about_us?: string,
   age?: number,
-  avatarUrl?: string
+  avatarUrl?: string,
+  uid?: string
 }
 
 export interface CurrentUser {
