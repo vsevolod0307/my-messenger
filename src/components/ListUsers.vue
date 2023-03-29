@@ -13,7 +13,10 @@
                     <span>Возраст: </span>
                     <span>{{ user.age }}</span>
                 </div>
-                <button class="list-user_send" @click="getUser(user)">Написать сообщение</button>
+                <div class="list-user_actions">
+                    <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
+                    <button :disabled="!user.uid" class="list-user_add-friend"></button>
+                </div>
             </div>
         </li>
     </ul>
@@ -104,11 +107,12 @@ export default {
         &_name > span:first-child {
             margin-right: 6px;
         }
-        &_send {
+        &_send, &_add-friend {
             background-color: #a1eba1;
+            background: url(../assets/send-mail.png) center 4px / 50% no-repeat;
             border: none;
             border-radius: 6px;
-            padding: 10px;
+            padding: 10px 30px;
             height: 40px;
             text-transform: uppercase;
             cursor: pointer;
@@ -118,6 +122,13 @@ export default {
             font-weight: 600;
             &:hover {
                 background-color: rgba(161,  235,  161, 0.5);
+            }
+        }
+        &_add-friend {
+            background: url(../assets/add-friend.png) center center / 50% no-repeat;
+            margin-left: 5px;
+            &:hover {
+                background-color: rgba(215, 230, 255, 0.5);
             }
         }
         &_info {
@@ -141,6 +152,8 @@ export default {
             gap: 20px;
             button {
                 margin: 0;
+                background: none;
+                background-color: #a1eba1;
             }
             textarea {
                 padding: 10px;

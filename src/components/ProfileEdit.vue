@@ -26,7 +26,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { getDatabase, set, ref } from "firebase/database";
 import { getStorage, ref as refStor, uploadBytes, getDownloadURL } from 'firebase/storage';
 import store from '@/store';
@@ -45,7 +45,7 @@ export default {
         }
     },
     methods: {
-        writeUserData() {
+        writeUserData(): void {
             set(this.sRef, {
                 first_name: this.dataEdit.first_name,
                 last_name: this.dataEdit.last_name,
@@ -56,9 +56,11 @@ export default {
             })
             this.$emit("edit", false)
         },
-        async editImage(imageUrl) {
+        async editImage(e: Event): Promise<void> {
             const storRef = refStor(getStorage(), `users/${store.state.userUid}/avatar`);
-            await uploadBytes(storRef, imageUrl.target.files[0]);
+            const target = e.target as HTMLInputElement
+            const file = (target.files as FileList)[0] as File;
+            await uploadBytes(storRef, file);
             await getDownloadURL(storRef).then(url => this.dataEdit.avatarUrl = url)
         },
     }
