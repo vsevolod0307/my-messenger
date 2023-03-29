@@ -36,7 +36,7 @@ export default {
     props: ['isEdit', 'data'],
     data() {
         return {
-            sRef: ref(getDatabase(), `users/(${this.$route.params.id})`),
+            sRef: ref(getDatabase(), `users/(${this.$route.params.id})/info`),
         }
     },
     computed: {

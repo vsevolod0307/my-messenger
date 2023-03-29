@@ -2,14 +2,14 @@
 import { getAuth, Auth } from "firebase/auth";
 import { createStore } from "vuex";
 import { getDatabase, set, ref, onValue, get, child, onChildAdded, DatabaseReference } from "firebase/database";
-import { User, CurrentUser } from "@/types/user";
+import { UserInfo, CurrentUser, User } from "@/types/user";
 import { PersonalChats } from "@/types/chats";
 import { getRandomNumber } from "@/helpers/functions";
 
 export default createStore({
   state: {
     userAuth: {} as Auth,
-    listUsers: [] as User[],
+    listUsers: [] as UserInfo[],
     messagesPersonal: {} as PersonalChats,
     databaseRef: {} as DatabaseReference,
     userUid: "" as string
@@ -76,13 +76,15 @@ export default createStore({
           }
         })
         const filterList = Object.entries(d.val()).filter(user => user[0] !== `(${state.userUid})`)
-        const mainData = filterList.map(item => {
+        const mainData = filterList.map(([key, itemType]) => {
           const regExpDelBrackets = /[()]/g;
+          const item = itemType as User
           return {
-            uid: item[0].replace(regExpDelBrackets, ""),
-            ...item[1] as User[]
+            uid: key.replace(regExpDelBrackets, ""),
+            ...item.info
           }
         })
+        // console.log(mainData[0]["personal-chats"])
         commit("updateListUsers", [...mainData, ...commonData])
       })
     },

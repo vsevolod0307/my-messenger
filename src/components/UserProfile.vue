@@ -74,7 +74,8 @@ export default {
         // }
     },
     mounted(): void {
-        store.dispatch("databaseRef", `users/(${this.$route.params.id})`)
+        // window.onresize = function(){ location.reload(); }
+        store.dispatch("databaseRef", `users/(${this.$route.params.id})/info`)
         this.updateDataProfile();
 
         // this.requestPermission();

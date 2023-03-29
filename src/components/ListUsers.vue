@@ -2,7 +2,6 @@
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
             <div class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
-                <!-- <img :src="user.avatarUrl" alt=""> -->
             </div>
             <div class="list-user_info">
                 <div class="list-user_name">
@@ -11,11 +10,11 @@
                 </div>
                 <div class="list-user_age">
                     <span>Возраст: </span>
-                    <span>{{ user.age }}</span>
+                    <span>{{ user }}</span>
                 </div>
                 <div class="list-user_actions">
                     <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
-                    <button :disabled="!user.uid" class="list-user_add-friend"></button>
+                    <button :disabled="!user.uid" class="list-user_add-friend" @click="sendAddFriend(user.uid)"></button>
                 </div>
             </div>
         </li>
@@ -31,7 +30,7 @@
 <script lang="ts">
 import store from '@/store';
 import { set, ref, getDatabase, push } from 'firebase/database';
-import { User } from '@/types/user';
+import { User, UserInfo } from '@/types/user';
 
 export default {
     name: "ListUsers",
@@ -39,24 +38,21 @@ export default {
         return {
             isSend: false,
             message: "",
-            user: {} as User
+            user: {} as UserInfo
         }
     },
     computed: {
-        listUsers(): User[] {
+        listUsers(): UserInfo[] {
             return store.state.listUsers;
         },
         uid(): string {
             return store.state.userUid;
-        },
-        currentUser(): User {
-            return store.getters.getCurrentUser;
         }
     },
     methods: {
-        sendMessage(user: User) {
+        sendMessage(user: UserInfo) {
             try {
-                set(push(ref(getDatabase(), `users/(${user.uid})/personal-chats/is-${this.uid}`)), {
+                set(push(ref(getDatabase(), `users/(${user})/personal-chats/is-${this.uid}`)), {
                     message: {
                         body: this.message,
                         datetime: new Date().toISOString(),
@@ -78,9 +74,14 @@ export default {
                 this.isSend = false;
             }
         },
-        getUser(user: User) {
+        getUser(user: UserInfo) {
             this.isSend = true
             this.user = user;
+        },
+        sendAddFriend(uid?: string) {
+            set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
+                allow: false
+            })
         }
     },
     mounted() {

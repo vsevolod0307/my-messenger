@@ -7,7 +7,7 @@ export interface dataPersonal {
   avatarUrl: string
 }
 
-export interface User {
+export interface UserInfo {
   gender: string,
   first_name: string,
   last_name: string,
@@ -15,6 +15,10 @@ export interface User {
   age?: number,
   avatarUrl?: string,
   uid?: string
+}
+
+export interface User {
+  info: UserInfo
 }
 
 export interface CurrentUser {
