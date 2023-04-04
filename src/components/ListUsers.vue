@@ -1,8 +1,10 @@
 <template>
+    <div class="list-title">Все пользователи</div>
     <ul class="list-users">
         <li v-for="user, idx in listUsers" :key="idx" class="list-user">
-            <div class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
+            <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
             </div>
+            <img v-if="!user.avatarUrl" src="@/assets/no_avatar.png" class="list-user_avatar">
             <div class="list-user_info">
                 <div class="list-user_name">
                     <span>{{ user.first_name }}</span>
@@ -10,7 +12,7 @@
                 </div>
                 <div class="list-user_age">
                     <span>Возраст: </span>
-                    <span>{{ user }}</span>
+                    <span>{{ user.age }}</span>
                 </div>
                 <div class="list-user_actions">
                     <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
@@ -30,14 +32,14 @@
 <script lang="ts">
 import store from '@/store';
 import { set, ref, getDatabase, push } from 'firebase/database';
-import { User, UserInfo } from '@/types/user';
+import { UserInfo } from '@/types/user';
 
 export default {
     name: "ListUsers",
     data() {
         return {
             isSend: false,
-            message: "",
+            message: "" as string,
             user: {} as UserInfo
         }
     },
@@ -50,7 +52,7 @@ export default {
         }
     },
     methods: {
-        sendMessage(user: UserInfo) {
+        sendMessage(user: UserInfo): void {
             try {
                 set(push(ref(getDatabase(), `users/(${user})/personal-chats/is-${this.uid}`)), {
                     message: {
@@ -74,17 +76,17 @@ export default {
                 this.isSend = false;
             }
         },
-        getUser(user: UserInfo) {
+        getUser(user: UserInfo): void {
             this.isSend = true
             this.user = user;
         },
-        sendAddFriend(uid?: string) {
+        sendAddFriend(uid?: string): void {
             set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
                 allow: false
             })
         }
     },
-    mounted() {
+    mounted(): void {
         store.dispatch("loadGetUsers");
     }
 }
@@ -93,6 +95,12 @@ export default {
 <style lang="scss" scoped>
     .list-users {
         list-style-type: none;
+    }
+    .list-title {
+        font-size: 24px;
+        margin-top: 20px;
+        letter-spacing: 2px;
+        font-weight: 600;
     }
     .list-user {
         display: flex;

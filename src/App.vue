@@ -14,6 +14,10 @@
             to="/all-users"
         ><img src="@/assets/all.png" alt="">
         </router-link>
+        <router-link
+            to="/friends"
+        ><img src="@/assets/friends.png" alt="">
+        </router-link>
     </div>
   </nav>
   <router-view />
