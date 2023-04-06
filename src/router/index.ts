@@ -47,7 +47,19 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/friends",
     name: "friends",
-    component: () => import('../views/MyFriends.vue')
+    component: () => import('../views/MyFriends.vue'),
+    children: [
+      {
+        path: "list",
+        name: "friendsList",
+        component: () => import('../components/Friends.vue')
+      },
+      {
+        path: "requests",
+        name: "friendRequests",
+        component: () => import('../components/FriendRequests.vue')
+      }
+    ]
   }
 ];
 

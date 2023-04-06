@@ -1,7 +1,7 @@
 <template>
     <div class="list-title">Все пользователи</div>
     <ul class="list-users">
-        <li v-for="user, idx in listUsers" :key="idx" class="list-user">
+        <li v-for="user, idx in data" :key="idx" class="list-user">
             <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
             </div>
             <img v-if="!user.avatarUrl" src="@/assets/no_avatar.png" class="list-user_avatar">
@@ -36,6 +36,9 @@ import { UserInfo } from '@/types/user';
 
 export default {
     name: "ListUsers",
+    props: {
+        data: Object
+    },
     data() {
         return {
             isSend: false,
@@ -44,9 +47,6 @@ export default {
         }
     },
     computed: {
-        listUsers(): UserInfo[] {
-            return store.state.listUsers;
-        },
         uid(): string {
             return store.state.userUid;
         }
@@ -85,9 +85,6 @@ export default {
                 allow: false
             })
         }
-    },
-    mounted(): void {
-        store.dispatch("loadGetUsers");
     }
 }
 </script>
