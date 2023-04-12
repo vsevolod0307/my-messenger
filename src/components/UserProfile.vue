@@ -27,14 +27,12 @@
             <button class="sign-out" @click="signOutUser">Выйти</button>
         </div>
     </div>
-    <profile-menu v-if="!isEdit"/>
 </template>
 
 <script lang="ts">
 import { signOut } from 'firebase/auth';
 import { onValue } from "firebase/database";
 import ProfileEdit from "@/components/ProfileEdit.vue";
-import ProfileMenu from "@/components/ProfileMenu.vue";
 import store from '@/store';
 import { dataPersonal } from "@/types/user";
 
@@ -45,7 +43,7 @@ export default {
             isEdit: false
         }
     },
-    components: { ProfileEdit, ProfileMenu },
+    components: { ProfileEdit },
     computed: {
         uid(): string {
             return store.state.userUid;
