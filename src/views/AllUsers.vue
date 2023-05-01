@@ -1,5 +1,5 @@
 <template>
-    <list-users :data="listUsers"/>
+    <list-users :dataUsers="listUsers"/>
 </template>
 
 <script lang="ts">

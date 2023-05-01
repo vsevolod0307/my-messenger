@@ -12,7 +12,8 @@ export default createStore({
     listUsers: [] as UserInfo[],
     messagesPersonal: {} as PersonalChats,
     databaseRef: {} as DatabaseReference,
-    userUid: "" as string
+    userUid: "" as string,
+    requestFriends: [] as string[]
   },
   getters: {
     getMessagesPersonal(state): PersonalChats {
@@ -27,6 +28,9 @@ export default createStore({
           ...currentUser[1]
         }
       }
+    },
+    getRequestFriends(state): string[] {
+      return state.requestFriends;
     },
     userUid: state => {
       return state.userUid
@@ -47,6 +51,9 @@ export default createStore({
     },
     updateMessagesPersonal(state, data): void {
       state.messagesPersonal = data;
+    },
+    updateRequestFriends(state, data): void {
+      state.requestFriends = data;
     },
     saveUid(state, uid): void {
       state.userUid = uid;
@@ -84,18 +91,28 @@ export default createStore({
             ...item.info
           }
         })
-        // console.log(mainData[0]["personal-chats"])
         commit("updateListUsers", [...mainData, ...commonData])
       })
     },
     loadMessagesPersonal({commit, state}): void {
-      onValue(ref(getDatabase(), `users/(${state.userUid})/personal-chats`), (data) => {
+      onValue(ref(getDatabase(), `users/(${state.userUid})/personal-chats`), data => {
         commit("updateMessagesPersonal", data.val())
       })
     },
     loadListUsers({commit, state}): void {
       onValue(state.databaseRef, (data) => {
         commit("updateListUsers", data.val())
+      })
+    },
+    loadRequestFriends({commit, state}): void {
+      onValue(ref(getDatabase(), `users/(${state.userUid})/requestFriends`), data => {
+        let allowRequests: string[] = [];
+        const requests = data.val();
+        for(let keyUid in requests) {
+          if(!requests[keyUid].allow) allowRequests.push(keyUid);
+        }
+        
+        commit("updateRequestFriends", allowRequests);
       })
     }
   },

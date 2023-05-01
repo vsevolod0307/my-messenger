@@ -1,7 +1,7 @@
 <template>
-    <div class="list-title">Все пользователи</div>
-    <ul class="list-users">
-        <li v-for="user, idx in data" :key="idx" class="list-user">
+    <div v-if="isAllUsers" class="list-title">Все пользователи</div>
+    <ul class="list-users" v-if="dataUsers">
+        <li v-for="user, idx in dataUsers" :key="idx" class="list-user">
             <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
             </div>
             <img v-if="!user.avatarUrl" src="@/assets/no_avatar.png" class="list-user_avatar">
@@ -14,9 +14,13 @@
                     <span>Возраст: </span>
                     <span>{{ user.age }}</span>
                 </div>
-                <div class="list-user_actions">
+                <div class="list-user_actions" v-if="isAllUsers">
                     <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
                     <button :disabled="!user.uid" class="list-user_add-friend" @click="sendAddFriend(user.uid)"></button>
+                </div>
+                <div v-else class="list-user_actions-request">
+                    <button @click="allowFriend(user.uid)" class="list-user-allow">Принять</button>
+                    <button @click="disallowFriend(user.uid)" class="list-user-disallow">Отклонить</button>
                 </div>
             </div>
         </li>
@@ -33,11 +37,17 @@
 import store from '@/store';
 import { set, ref, getDatabase, push } from 'firebase/database';
 import { UserInfo } from '@/types/user';
+import { defineComponent } from 'vue';
+import type { PropType } from 'vue'
 
-export default {
+export default defineComponent({
     name: "ListUsers",
     props: {
-        data: Object
+        dataUsers: {} as PropType<UserInfo[]>,
+        isAllUsers: {
+            type: Boolean,
+            default: true
+        }
     },
     data() {
         return {
@@ -84,9 +94,17 @@ export default {
             set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
                 allow: false
             })
+        },
+        allowFriend(uid?: string): void {
+            set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
+                allow: true
+            })
+        },
+        disallowFriend(uid?: string): void {
+            console.log("disallow friend" + uid)
         }
     }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -141,6 +159,33 @@ export default {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+        }
+        &_actions-request {
+            padding: 4px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        &-allow, &-disallow {
+            min-width: 140px;
+            padding: 4px 0;
+            border: none;
+            background-color: #d0f5d0;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-radius: 4px;
+            &:hover {
+                background-color: rgba(208, 245, 208, 0.7);
+            }
+        }
+        &-disallow {
+            background-color: rgb(58, 55, 55);
+            color: #fff;
+            &:hover {
+                background-color: rgba(58, 55, 55, 0.7);
+            }
         }
     }
     .send-modal {

@@ -1,6 +1,7 @@
 <template>
-  <!-- <list-users /> -->
-  <div>здесь будет контент</div>
+  <div class="friends">
+
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,3 +12,9 @@ export default {
   name: "Friends"
 }
 </script>
+
+<style scoped>
+  .friends {
+    padding: 0 20px;
+  }
+</style>

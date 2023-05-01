@@ -25,14 +25,11 @@ export default class MyFriends extends Vue {}
 
 <style lang="scss" scoped>
     .wrapper {
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 20% 1fr;
         &-list {
             list-style-type: none;
-            width: 20%;
-            &+ * {
-                width: 70%;
-            }
+            padding-top: 20px;
         }
         &-link {
             display: flex;
