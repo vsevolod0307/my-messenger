@@ -13,7 +13,8 @@ export default createStore({
     messagesPersonal: {} as PersonalChats,
     databaseRef: {} as DatabaseReference,
     userUid: "" as string,
-    requestFriends: [] as string[]
+    requestFriends: [] as string[],
+    userFriends: [] as UserInfo[]
   },
   getters: {
     getMessagesPersonal(state): PersonalChats {
