@@ -1,6 +1,6 @@
 <template>
   <div class="requests">
-    <list-users :isAllUsers="false" :dataUsers="getRequests" />
+    <list-users :isAllUsers="false" :isRequest="true" :dataUsers="getRequests" />
   </div>
 </template>
 

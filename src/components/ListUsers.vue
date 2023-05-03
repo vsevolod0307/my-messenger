@@ -2,9 +2,18 @@
     <div v-if="isAllUsers" class="list-title">Все пользователи</div>
     <ul class="list-users" v-if="dataUsers">
         <li v-for="user, idx in dataUsers" :key="idx" class="list-user">
-            <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }">
-            </div>
-            <img v-if="!user.avatarUrl" src="@/assets/no_avatar.png" class="list-user_avatar">
+            <router-link
+                v-if="user.uid"
+                :to="{
+                    name: 'profile',
+                    params:  {
+                        id: user.uid
+                    }
+                }"
+            >
+                <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }"></div>
+                <img v-else src="@/assets/no_avatar.png" class="list-user_avatar">
+            </router-link>
             <div class="list-user_info">
                 <div class="list-user_name">
                     <span>{{ user.first_name }}</span>
@@ -14,13 +23,13 @@
                     <span>Возраст: </span>
                     <span>{{ user.age }}</span>
                 </div>
-                <div class="list-user_actions" v-if="isAllUsers">
-                    <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
-                    <button :disabled="!user.uid" class="list-user_add-friend" @click="sendAddFriend(user.uid)"></button>
-                </div>
-                <div v-else class="list-user_actions-request">
-                    <button @click="allowFriend(user.uid)" class="list-user-allow">Принять</button>
+                <div class="list-user_actions-request" v-if="isRequest">
+                    <button @click="allowFriend(user)" class="list-user-allow">Принять</button>
                     <button @click="disallowFriend(user.uid)" class="list-user-disallow">Отклонить</button>
+                </div>
+                <div class="list-user_actions" v-else>
+                    <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
+                    <button v-if="isAllUsers" :disabled="!user.uid" class="list-user_add-friend" @click="sendAddFriend(user.uid)"></button>
                 </div>
             </div>
         </li>
@@ -35,10 +44,10 @@
 
 <script lang="ts">
 import store from '@/store';
-import { set, ref, getDatabase, push } from 'firebase/database';
+import { set, ref, getDatabase, push, remove } from 'firebase/database';
 import { UserInfo } from '@/types/user';
 import { defineComponent } from 'vue';
-import type { PropType } from 'vue'
+import type { PropType } from 'vue';
 
 export default defineComponent({
     name: "ListUsers",
@@ -47,6 +56,10 @@ export default defineComponent({
         isAllUsers: {
             type: Boolean,
             default: true
+        },
+        isRequest: {
+            type: Boolean, 
+            default: false
         }
     },
     data() {
@@ -59,6 +72,9 @@ export default defineComponent({
     computed: {
         uid(): string {
             return store.state.userUid;
+        },
+        currentUser(): UserInfo {
+            return store.getters.getCurrentUser;
         }
     },
     methods: {
@@ -91,18 +107,21 @@ export default defineComponent({
             this.user = user;
         },
         sendAddFriend(uid?: string): void {
-            set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
+            set(ref(getDatabase(), `users/(${uid})/request-friends/${this.uid}`), {
                 allow: false
             })
         },
-        allowFriend(uid?: string): void {
-            set(ref(getDatabase(), `users/(${uid})/requestFriends/${this.uid}`), {
-                allow: true
-            })
+        allowFriend(user?: UserInfo): void {
+            set(ref(getDatabase(), `users/(${this.uid})/request-friends`), null);
+            set(ref(getDatabase(), `users/(${user?.uid})/friends/${this.uid}`), {...this.currentUser});
+            set(ref(getDatabase(), `users/(${this.uid})/friends/${user?.uid}`), {...user});
         },
         disallowFriend(uid?: string): void {
             console.log("disallow friend" + uid)
         }
+    },
+    mounted(): void {
+        store.dispatch("loadCurrentUser");
     }
 })
 </script>

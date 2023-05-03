@@ -20,13 +20,3 @@ export interface UserInfo {
 export interface User {
   info: UserInfo
 }
-
-export interface CurrentUser {
-  gender: string,
-  first_name: string,
-  last_name: string,
-  about_us?: string,
-  age?: number,
-  avatarUrl?: string,
-  uid: string
-}

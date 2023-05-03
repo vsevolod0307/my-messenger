@@ -2,7 +2,7 @@
 import { getAuth, Auth } from "firebase/auth";
 import { createStore } from "vuex";
 import { getDatabase, set, ref, onValue, get, child, onChildAdded, DatabaseReference } from "firebase/database";
-import { UserInfo, CurrentUser, User } from "@/types/user";
+import { UserInfo, User } from "@/types/user";
 import { PersonalChats } from "@/types/chats";
 import { getRandomNumber } from "@/helpers/functions";
 
@@ -10,25 +10,30 @@ export default createStore({
   state: {
     userAuth: {} as Auth,
     listUsers: [] as UserInfo[],
+    listFriends: [] as UserInfo[],
     messagesPersonal: {} as PersonalChats,
     databaseRef: {} as DatabaseReference,
     userUid: "" as string,
     requestFriends: [] as string[],
-    userFriends: [] as UserInfo[]
+    userFriends: [] as UserInfo[],
+    currentUser: {} as UserInfo
   },
   getters: {
     getMessagesPersonal(state): PersonalChats {
       return state.messagesPersonal
     },
-    getCurrentUser(state): CurrentUser | undefined {
-      const currentUser = Object.entries(state.listUsers).find(user => user[0] === `(${state.userUid})`);
-      const regExpDelBrackets = /[()]/g;
-      if(currentUser) {
-        return {
-          uid: currentUser[0].replace(regExpDelBrackets, ""),
-          ...currentUser[1]
-        }
-      }
+    // getCurrentUser(state): CurrentUser | undefined {
+    //   const currentUser = Object.entries(state.listUsers).find(user => user[0] === `(${state.userUid})`);
+    //   const regExpDelBrackets = /[()]/g;
+    //   if(currentUser) {
+    //     return {
+    //       uid: currentUser[0].replace(regExpDelBrackets, ""),
+    //       ...currentUser[1]
+    //     }
+    //   }
+    // },
+    getCurrentUser(state): UserInfo {
+      return state.currentUser;
     },
     getRequestFriends(state): string[] {
       return state.requestFriends;
@@ -56,8 +61,14 @@ export default createStore({
     updateRequestFriends(state, data): void {
       state.requestFriends = data;
     },
+    updateCurrentUser(state, user): void {
+      state.currentUser = user;
+    },
     saveUid(state, uid): void {
       state.userUid = uid;
+    },
+    updateFriends(state, friends): void {
+      state.listFriends = friends;
     }
   },
   actions: {
@@ -68,7 +79,7 @@ export default createStore({
       context.commit("databaseRef", pathDb);
     },
     async loadGetUsers({commit, state}): Promise<void> {
-      get(child(ref(getDatabase()), "users")).then(async d => {
+      get(child(ref(getDatabase()), "users")).then(async data => {
         let commonData: any;
         await fetch(`https://randomuser.me/api?results=${getRandomNumber(6, 18)}`)
         .then(res => res.json())
@@ -83,7 +94,7 @@ export default createStore({
             about_us: "---"
           }
         })
-        const filterList = Object.entries(d.val()).filter(user => user[0] !== `(${state.userUid})`)
+        const filterList = Object.entries(data.val()).filter(user => user[0] !== `(${state.userUid})`)
         const mainData = filterList.map(([key, itemType]) => {
           const regExpDelBrackets = /[()]/g;
           const item = itemType as User
@@ -106,7 +117,7 @@ export default createStore({
       })
     },
     loadRequestFriends({commit, state}): void {
-      onValue(ref(getDatabase(), `users/(${state.userUid})/requestFriends`), data => {
+      onValue(ref(getDatabase(), `users/(${state.userUid})/request-friends`), data => {
         let allowRequests: string[] = [];
         const requests = data.val();
         for(let keyUid in requests) {
@@ -114,6 +125,16 @@ export default createStore({
         }
         
         commit("updateRequestFriends", allowRequests);
+      })
+    },
+    loadCurrentUser({commit, state}): void {
+      get(child(ref(getDatabase()), `users/(${state.userUid})/info`)).then((data) => {
+        commit("updateCurrentUser", data.val());
+      })
+    },
+    loadFriends({commit, state}): void {
+      get(child(ref(getDatabase()), `users/(${state.userUid})/friends`)).then(friends => {
+        commit("updateFriends", friends.val());
       })
     }
   },
