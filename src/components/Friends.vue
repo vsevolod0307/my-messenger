@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import store from '@/store';
-import ListUsers from './ListUsers.vue'
+import ListUsers from './ListUsers.vue';
 import { UserInfo } from "@/types/user";
 /* eslint-disable */
 export default {

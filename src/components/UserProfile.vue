@@ -1,28 +1,28 @@
 <template>
-    <div class="profile">
+    <div class="profile" v-if="user">
         <div class="profile-info" v-if="!isEdit">
             <div class="avatar">
-                <img :src="data.avatarUrl" alt="">
+                <img :src="user?.avatarUrl" alt="">
             </div>
             <div class="profile-name">
-                <span class="first-name">{{ data.first_name }}</span>
-                <span class="last-name">{{ data.last_name }}</span>
+                <span class="first-name">{{ user?.first_name }}</span>
+                <span class="last-name">{{ user?.last_name }}</span>
             </div>
             <div class="profile-detail-info">
-                <div class="age"><span>Возраст: </span>{{ data.age }}</div>
-                <div class="gender"><span>Пол: </span>{{ getGender() }}</div>
+                <div class="age"><span>Возраст: </span>{{ user?.age }}</div>
+                <div class="gender"><span>Пол: </span>{{ getGender(user?.gender) }}</div>
                 <div class="about">
                     <span class="profile-about-title">О себе: </span>
-                    <span class="profile-about">{{ data.about_us }}</span>
+                    <span class="profile-about">{{ user?.about_us }}</span>
                 </div>
             </div>
         </div>
         <profile-edit
-            :data="data"
+            :data="user"
             :isEdit="isEdit"
             @edit="isEdit = $event"
         />
-        <div class="profile-main-actions">
+        <div class="profile-main-actions" v-if="uid === $route.params.id">
             <button class="edit" @click="isEdit = true">Редактировать</button>
             <button class="sign-out" @click="signOutUser">Выйти</button>
         </div>
@@ -31,15 +31,14 @@
 
 <script lang="ts">
 import { signOut } from 'firebase/auth';
-import { onValue } from "firebase/database";
 import ProfileEdit from "@/components/ProfileEdit.vue";
 import store from '@/store';
-import { dataPersonal } from "@/types/user";
+import { UserInfo } from '@/types/user';
+import { PropType } from 'vue';
 
 export default {
     data() {
         return {
-            data: {} as dataPersonal,
             isEdit: false
         }
     },
@@ -47,23 +46,25 @@ export default {
     computed: {
         uid(): string {
             return store.state.userUid;
+        },
+        currentUser(): UserInfo {
+            return store.getters.getCurrentUser;
+        },
+        user(): UserInfo {
+            if(store.state.userUid === this.$route.params.id) {
+                return this.currentUser;
+            } else {
+                store.dispatch("loadUserById", this.$route.params.id as string);
+                return store.state.userByUid;
+            }
         }
     },
     methods: {
         signOutUser(): void {
             signOut(store.state.userAuth);
         },
-        getGender(): string {
-            return this.data.gender === "male" ? "Мужчина" : "Женщина";
-        },
-        updateDataProfile(): void {
-            onValue(store.state.databaseRef, data => {
-                if(data.exists()) {
-                    this.data = data.val();
-                } else {
-                    this.isEdit = true;
-                }
-            })
+        getGender(gender: string | undefined): string {
+            return gender === "male" ? "Мужчина" : "Женщина";
         },
         // requestPermission() {
         //     Notification.requestPermission().then(per => {
@@ -71,10 +72,13 @@ export default {
         //     })
         // }
     },
+
     mounted(): void {
+        store.dispatch("loadCurrentUser");
+    }
+    // mounted(): void {
         // window.onresize = function(){ location.reload(); }
-        store.dispatch("databaseRef", `users/(${this.$route.params.id})/info`)
-        this.updateDataProfile();
+        
 
         // this.requestPermission();
         // const messaging = getMessaging();
@@ -93,7 +97,7 @@ export default {
         //     console.log('An error occurred while retrieving token. ', err);
         //     // ...
         // });
-    }
+    // }
 }
 </script>
 

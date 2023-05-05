@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { getAuth, Auth } from "firebase/auth";
 import { createStore } from "vuex";
-import { getDatabase, set, ref, onValue, get, child, onChildAdded, DatabaseReference } from "firebase/database";
+import { getDatabase, set, ref, onValue, get, child, DatabaseReference } from "firebase/database";
 import { UserInfo, User } from "@/types/user";
 import { PersonalChats } from "@/types/chats";
 import { getRandomNumber } from "@/helpers/functions";
@@ -16,7 +16,8 @@ export default createStore({
     userUid: "" as string,
     requestFriends: [] as string[],
     userFriends: [] as UserInfo[],
-    currentUser: {} as UserInfo
+    currentUser: {} as UserInfo,
+    userByUid: {} as UserInfo
   },
   getters: {
     getMessagesPersonal(state): PersonalChats {
@@ -69,6 +70,9 @@ export default createStore({
     },
     updateFriends(state, friends): void {
       state.listFriends = friends;
+    },
+    updateUserById(state, user): void {
+      state.userByUid = user;
     }
   },
   actions: {
@@ -135,6 +139,11 @@ export default createStore({
     loadFriends({commit, state}): void {
       get(child(ref(getDatabase()), `users/(${state.userUid})/friends`)).then(friends => {
         commit("updateFriends", friends.val());
+      })
+    },
+    loadUserById(context, uid): void {
+      get(child(ref(getDatabase()), `users/(${uid})/info`)).then(user => {
+        context.commit("updateUserById", user.val());
       })
     }
   },

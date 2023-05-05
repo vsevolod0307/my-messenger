@@ -14,6 +14,7 @@
                 <div v-if="user.avatarUrl" class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }"></div>
                 <img v-else src="@/assets/no_avatar.png" class="list-user_avatar">
             </router-link>
+            <div v-else class="list-user_avatar" :style="{ background: `url(${user.avatarUrl}) center center / cover no-repeat`, display: 'flex' }"></div>
             <div class="list-user_info">
                 <div class="list-user_name">
                     <span>{{ user.first_name }}</span>
@@ -28,8 +29,18 @@
                     <button @click="disallowFriend(user.uid)" class="list-user-disallow">Отклонить</button>
                 </div>
                 <div class="list-user_actions" v-else>
-                    <button :disabled="!user.uid" class="list-user_send" @click="getUser(user)"></button>
-                    <button v-if="isAllUsers" :disabled="!user.uid" class="list-user_add-friend" @click="sendAddFriend(user.uid)"></button>
+                    <button 
+                        :disabled="!user.uid" 
+                        class="list-user_send" 
+                        @click="getUser(user)"
+                    />
+                    <button 
+                        v-if="isAllUsers" 
+                        :disabled="!user.uid" 
+                        class="list-user_add-friend"
+                        :class="{ friend: isFriendByUser(user.uid) }" 
+                        @click="sendAddFriend(user.uid)"
+                    />
                 </div>
             </div>
         </li>
@@ -44,7 +55,7 @@
 
 <script lang="ts">
 import store from '@/store';
-import { set, ref, getDatabase, push, remove } from 'firebase/database';
+import { set, ref, getDatabase, push } from 'firebase/database';
 import { UserInfo } from '@/types/user';
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
@@ -118,6 +129,9 @@ export default defineComponent({
         },
         disallowFriend(uid?: string): void {
             console.log("disallow friend" + uid)
+        },
+        isFriendByUser(uid?: string) {
+            store.dispatch("isFriendByUser", uid);
         }
     },
     mounted(): void {
